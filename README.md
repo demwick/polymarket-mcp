@@ -1,11 +1,13 @@
 # Polymarket Trader MCP Server
 
-[![npm version](https://img.shields.io/npm/v/polymarket-trader-mcp)](https://www.npmjs.com/package/polymarket-trader-mcp)
-[![Node.js](https://img.shields.io/badge/node-18%2B-brightgreen)](https://nodejs.org)
-[![MCP Protocol](https://img.shields.io/badge/MCP-1.0-blue)](https://modelcontextprotocol.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
-[![Tools](https://img.shields.io/badge/tools-48-purple)]()
+[![npm](https://img.shields.io/npm/v/polymarket-trader-mcp?color=cb0000&style=flat-square)](https://www.npmjs.com/package/polymarket-trader-mcp)
+[![downloads](https://img.shields.io/npm/dm/polymarket-trader-mcp?color=cb0000&style=flat-square)](https://www.npmjs.com/package/polymarket-trader-mcp)
+[![node](https://img.shields.io/badge/node-18%2B-43853d?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![MCP](https://img.shields.io/badge/MCP-1.0-8b5cf6?style=flat-square)](https://modelcontextprotocol.io)
+[![license](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](https://opensource.org/licenses/MIT)
+[![tests](https://img.shields.io/badge/tests-200%2B_passing-22c55e?style=flat-square)]()
+[![tools](https://img.shields.io/badge/tools-49-f59e0b?style=flat-square)]()
 
 **Trade, analyze, and automate Polymarket prediction markets through AI.**
 
