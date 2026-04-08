@@ -7,7 +7,7 @@
     "polymarket-copy-trader": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc && cp -r src/web/public dist/web/public",
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsc --watch",
     "test": "vitest run",
@@ -38,12 +38,10 @@
     "@polymarket/clob-client": "^5.8.1",
     "better-sqlite3": "^12.8.0",
     "dotenv": "^17.4.1",
-    "express": "^5.2.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@types/express": "^5.0.6",
     "@types/node": "^25.5.2",
     "typescript": "^6.0.2",
     "vitest": "^4.1.3"

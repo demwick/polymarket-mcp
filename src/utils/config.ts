@@ -12,7 +12,6 @@ const configSchema = z.object({
   DAILY_BUDGET: z.coerce.number().positive().default(20),
   MIN_CONVICTION: z.coerce.number().positive().default(3),
   COPY_MODE: z.enum(["preview", "live"]).default("preview"),
-  DASHBOARD_PORT: z.coerce.number().int().positive().default(3847),
   CHAIN_ID: z.coerce.number().int().positive().default(137),
   MCP_LICENSE_KEY: z.string().optional().default(""),
 });

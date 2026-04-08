@@ -36,7 +36,6 @@ import { cancelOrdersSchema, handleCancelOrders } from "./tools/cancel-orders.js
 import { logCycleSchema, handleLogCycle } from "./tools/log-cycle.js";
 import { handleCheckExits } from "./tools/check-exits.js";
 
-import { startWebDashboard } from "./web/server.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, "..", "copytrader.db");
@@ -195,13 +194,10 @@ server.tool(
   (input) => ({ content: [{ type: "text" as const, text: handleLogCycle(db, logCycleSchema.parse(input)) }] })
 );
 
-// Start web dashboard
-startWebDashboard(db, budgetManager, walletMonitor, tradeExecutor, config.DASHBOARD_PORT);
-
 // Start MCP server
 async function main() {
   log("info", "Starting Polymarket Copy Trader MCP Server");
-  log("info", `Mode: ${config.COPY_MODE} | Budget: $${config.DAILY_BUDGET}/day | Port: ${config.DASHBOARD_PORT}`);
+  log("info", `Mode: ${config.COPY_MODE} | Budget: $${config.DAILY_BUDGET}/day`);
 
   if (config.COPY_MODE === "live" && !hasLiveCredentials()) {
     const missing = validateLiveCredentials();

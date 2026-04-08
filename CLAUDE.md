@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Test Commands
 
 ```bash
-npm run build          # tsc + copy web assets to dist/
+npm run build          # tsc
 npm run start          # run MCP server (node dist/index.js)
 npm run dev            # tsc --watch
 npm test               # vitest run (all tests)
@@ -20,7 +20,7 @@ MCP server for Polymarket copy trading. Three-layer design: **Tools → Services
 
 ### Entry Point & MCP Server
 
-`src/index.ts` bootstraps everything: opens SQLite DB, creates service instances (BudgetManager, TradeExecutor, WalletMonitor, PositionTracker), registers 16 MCP tools, starts Express web dashboard, and handles graceful shutdown (SIGINT/SIGTERM).
+`src/index.ts` bootstraps everything: opens SQLite DB, creates service instances (BudgetManager, TradeExecutor, WalletMonitor, PositionTracker), registers 21 MCP tools, and handles graceful shutdown (SIGINT/SIGTERM). Dashboard is a separate project (`polymarket-dashboard`).
 
 ### Layers
 
@@ -42,7 +42,6 @@ MCP server for Polymarket copy trading. Three-layer design: **Tools → Services
 - **Zod for input validation** — every tool has a schema; `getConfig()` validates env vars
 - **License gating** — `checkLicense()` is async (calls external API), cached after first call. Free tier has limits (3 wallets, 1 leaderboard page). Pro features: monitor, trade history, go_live, set_config, close_position.
 - **Dual execution mode** — `COPY_MODE=preview` (default) simulates trades in DB; `COPY_MODE=live` requires Polymarket API credentials and places real orders.
-- **Web dashboard** — Express on `DASHBOARD_PORT` (default 3847) serves static HTML/JS and JSON API endpoints for dashboard data, monitor start/stop.
 
 ### External APIs
 

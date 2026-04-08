@@ -20,7 +20,6 @@ vi.mock("../../src/utils/config.js", () => ({
     DAILY_BUDGET: 20,
     MIN_CONVICTION: 3,
     COPY_MODE: "preview",
-    DASHBOARD_PORT: 3847,
     CHAIN_ID: 137,
     MCP_LICENSE_KEY: "",
   })),
