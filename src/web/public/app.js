@@ -63,10 +63,12 @@ function render(data) {
     noWatchlist.style.display = "none";
     cards.innerHTML = data.watchlist.map(function(w) {
       var addr = w.address.slice(0, 6) + ".." + w.address.slice(-4);
+      var escapedAlias = escapeHtml(w.alias || "Unknown");
       return '<div class="wallet-card">' +
-        '<div class="alias">' + (w.alias || "Unknown") + '</div>' +
+        '<div class="alias">' + escapedAlias + '</div>' +
         '<div class="addr">' + addr + '</div>' +
         '<div class="meta">Vol: $' + (w.volume || 0).toLocaleString() + ' | PnL: $' + (w.pnl || 0).toLocaleString() + '</div>' +
+        '<button class="remove-btn" onclick="removeFromWatchlist(\'' + w.address + '\')">Remove</button>' +
         '</div>';
     }).join("");
   } else {
@@ -98,6 +100,94 @@ async function toggleMonitor() {
     console.error("Monitor toggle failed:", err);
   }
   btn.disabled = false;
+}
+
+function escapeHtml(str) {
+  var div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function openDiscover() {
+  document.getElementById("discover-panel").style.display = "block";
+  document.getElementById("discover-btn").style.display = "none";
+}
+
+function closeDiscover() {
+  document.getElementById("discover-panel").style.display = "none";
+  document.getElementById("discover-btn").style.display = "";
+}
+
+async function searchTraders() {
+  var btn = document.getElementById("discover-search-btn");
+  var loading = document.getElementById("discover-loading");
+  var results = document.getElementById("discover-results");
+  var period = document.getElementById("discover-period").value;
+  var minVol = document.getElementById("discover-min-vol").value || "1000";
+
+  btn.disabled = true;
+  loading.style.display = "block";
+  results.innerHTML = "";
+
+  try {
+    var res = await fetch("/api/discover-traders?period=" + period + "&min_volume=" + minVol);
+    var data = await res.json();
+
+    if (!data.ok || data.traders.length === 0) {
+      results.innerHTML = '<p class="empty-state">No traders found. Try lowering minimum volume.</p>';
+      return;
+    }
+
+    results.innerHTML = data.traders.map(function(t, i) {
+      var addr = t.address.slice(0, 6) + ".." + t.address.slice(-4);
+      var escapedName = escapeHtml(t.name);
+      return '<div class="trader-row">' +
+        '<div class="trader-info">' +
+          '<div class="name">#' + (i + 1) + ' ' + escapedName + ' <span style="color:#555">(' + addr + ')</span></div>' +
+          '<div class="stats">PnL: $' + t.pnl.toLocaleString() + ' | Vol: $' + t.volume.toLocaleString() + ' | Rank: ' + t.rank + '</div>' +
+        '</div>' +
+        '<button class="watch-btn" id="wb-' + i + '" onclick="addToWatchlist(\'' + t.address + '\', \'' + escapedName.replace(/'/g, "\\'") + '\', ' + t.volume + ', ' + t.pnl + ', ' + i + ')">+ Watch</button>' +
+        '</div>';
+    }).join("");
+  } catch (err) {
+    results.innerHTML = '<p class="empty-state">Error: ' + err.message + '</p>';
+  } finally {
+    btn.disabled = false;
+    loading.style.display = "none";
+  }
+}
+
+async function addToWatchlist(address, alias, volume, pnl, idx) {
+  var btn = document.getElementById("wb-" + idx);
+  btn.disabled = true;
+  btn.textContent = "Adding...";
+
+  try {
+    await fetch("/api/watchlist/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address: address, alias: alias, volume: volume, pnl: pnl })
+    });
+    btn.textContent = "Added";
+    btn.className = "watch-btn added";
+    fetchDashboard();
+  } catch (err) {
+    btn.textContent = "Failed";
+    btn.disabled = false;
+  }
+}
+
+async function removeFromWatchlist(address) {
+  try {
+    await fetch("/api/watchlist/remove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address: address })
+    });
+    fetchDashboard();
+  } catch (err) {
+    console.error("Remove failed:", err);
+  }
 }
 
 fetchDashboard();

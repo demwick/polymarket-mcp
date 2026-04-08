@@ -53,9 +53,29 @@
     </div>
 
     <div id="watchlist-section">
-      <h2>Watchlist</h2>
+      <div class="section-header">
+        <h2>Watchlist</h2>
+        <button id="discover-btn" onclick="openDiscover()">Discover Traders</button>
+      </div>
       <div id="watchlist-cards"></div>
       <p id="no-watchlist" class="empty-state">No wallets being watched</p>
+    </div>
+
+    <div id="discover-panel" style="display:none">
+      <div class="section-header">
+        <h2>Discover Top Traders</h2>
+        <button class="close-btn" onclick="closeDiscover()">&times;</button>
+      </div>
+      <div id="discover-controls">
+        <select id="discover-period">
+          <option value="ALL">All Time</option>
+          <option value="WEEK">This Week</option>
+        </select>
+        <input id="discover-min-vol" type="number" placeholder="Min Volume" value="1000">
+        <button id="discover-search-btn" onclick="searchTraders()">Search</button>
+      </div>
+      <div id="discover-loading" style="display:none" class="empty-state">Searching...</div>
+      <div id="discover-results"></div>
     </div>
 
     <div id="logs-section">

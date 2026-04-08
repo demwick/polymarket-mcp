@@ -138,3 +138,129 @@ td { font-size: 0.9em; }
 .log-entry.monitor { color: #60a5fa; }
 .log-entry.warn { color: #fbbf24; }
 .log-entry.info { color: #aaa; }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-header h2 { margin-bottom: 0; }
+
+#discover-btn {
+  padding: 6px 14px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  background: #1e3a5f;
+  color: #60a5fa;
+  font-weight: bold;
+  font-size: 0.8em;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+}
+
+#discover-btn:hover { background: #264a6f; }
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.4em;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+.close-btn:hover { color: #fff; }
+
+#discover-panel {
+  background: #111118;
+  border: 1px solid #1a1a2e;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+#discover-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+#discover-controls select,
+#discover-controls input {
+  background: #0a0a0f;
+  border: 1px solid #2a2a3e;
+  border-radius: 4px;
+  color: #e0e0e0;
+  padding: 6px 10px;
+  font-size: 0.85em;
+}
+
+#discover-controls input { width: 120px; }
+
+#discover-search-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+#discover-search-btn:hover { background: #1d4ed8; }
+#discover-search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#discover-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.trader-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0d0d14;
+  border: 1px solid #1a1a2e;
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+.trader-info { flex: 1; }
+.trader-info .name { font-weight: bold; color: #fff; font-size: 0.9em; }
+.trader-info .stats { font-size: 0.8em; color: #888; margin-top: 2px; }
+
+.watch-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #1a3a1a;
+  color: #4ade80;
+  font-weight: bold;
+  font-size: 0.75em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.watch-btn:hover { background: #245a24; }
+.watch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.watch-btn.added { background: #1a1a2e; color: #666; }
+
+.remove-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  background: #3a1a1a;
+  color: #f87171;
+  font-size: 0.7em;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.remove-btn:hover { background: #4a2020; }
