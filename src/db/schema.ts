@@ -29,7 +29,9 @@ export function initializeDb(db: Database.Database): void {
       status TEXT NOT NULL CHECK (status IN ('simulated', 'executed', 'failed', 'resolved_win', 'resolved_loss')),
       pnl REAL DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now')),
-      resolved_at TEXT
+      resolved_at TEXT,
+      current_price REAL,
+      exit_reason TEXT
     );
 
     CREATE TABLE IF NOT EXISTS daily_budget (

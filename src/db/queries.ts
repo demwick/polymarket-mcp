@@ -26,6 +26,8 @@ export interface TradeRecord {
   pnl?: number;
   created_at?: string;
   resolved_at?: string | null;
+  current_price?: number | null;
+  exit_reason?: string | null;
 }
 
 export function addToWatchlist(db: Database.Database, entry: Omit<WatchlistEntry, "added_at" | "last_checked">): void {
@@ -122,4 +124,36 @@ export function getConfig(db: Database.Database, key: string): string | null {
 
 export function setConfig(db: Database.Database, key: string, value: string): void {
   db.prepare("INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)").run(key, value);
+}
+
+export function getOpenPositions(db: Database.Database): TradeRecord[] {
+  return db.prepare(
+    "SELECT * FROM trades WHERE status IN ('simulated', 'executed') ORDER BY created_at DESC"
+  ).all() as TradeRecord[];
+}
+
+export function updateTradeExit(
+  db: Database.Database,
+  tradeId: number,
+  currentPrice: number,
+  exitReason: string,
+  pnl: number
+): void {
+  const status = pnl >= 0 ? "resolved_win" : "resolved_loss";
+  db.prepare(
+    "UPDATE trades SET current_price = ?, exit_reason = ?, pnl = ?, status = ?, resolved_at = datetime('now') WHERE id = ?"
+  ).run(currentPrice, exitReason, pnl, status, tradeId);
+}
+
+export function getPositionsByStatus(
+  db: Database.Database,
+  status: "open" | "closed" | "all"
+): TradeRecord[] {
+  if (status === "open") {
+    return db.prepare("SELECT * FROM trades WHERE status IN ('simulated', 'executed') ORDER BY created_at DESC").all() as TradeRecord[];
+  }
+  if (status === "closed") {
+    return db.prepare("SELECT * FROM trades WHERE status IN ('resolved_win', 'resolved_loss', 'failed') ORDER BY resolved_at DESC").all() as TradeRecord[];
+  }
+  return db.prepare("SELECT * FROM trades ORDER BY created_at DESC").all() as TradeRecord[];
 }
