@@ -62,7 +62,7 @@ describe("handleDiscoverMarkets", () => {
       ending: "today", limit: 20, min_volume: 100,
     });
 
-    expect(result).toContain("Error");
+    expect(result).toContain("Could not reach");
   });
 
   it("handles non-ok response", async () => {
@@ -72,7 +72,7 @@ describe("handleDiscoverMarkets", () => {
       ending: "today", limit: 20, min_volume: 100,
     });
 
-    expect(result).toContain("Error");
+    expect(result).toContain("Could not reach");
   });
 
   it("passes category filter", async () => {

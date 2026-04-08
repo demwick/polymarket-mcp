@@ -82,6 +82,6 @@ describe("handleGetPrice", () => {
 
   it("returns hint when no params provided", async () => {
     const result = await handleGetPrice(db, { show_positions: false });
-    expect(result).toContain("Provide condition_id");
+    expect(result).toContain("condition_id");
   });
 });

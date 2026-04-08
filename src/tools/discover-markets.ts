@@ -68,6 +68,6 @@ export async function handleDiscoverMarkets(input: DiscoverMarketsInput): Promis
     return output;
   } catch (err) {
     log("error", `Failed to discover markets: ${err}`);
-    return `Error discovering markets: ${err}`;
+    return "Could not reach the Polymarket API. This may be a temporary issue — try again in a moment.";
   }
 }

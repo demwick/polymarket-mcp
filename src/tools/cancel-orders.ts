@@ -10,7 +10,7 @@ export async function handleCancelOrders(executor: TradeExecutor): Promise<strin
   if (!isPro) return requirePro("cancel_orders");
 
   if (executor.getMode() !== "live") {
-    return "Cancel orders only works in live mode. In preview mode, orders are simulated.";
+    return "Cancel orders only works in live mode. Use `go_live` to switch to live trading first.";
   }
 
   try {
@@ -24,8 +24,9 @@ export async function handleCancelOrders(executor: TradeExecutor): Promise<strin
     await client.cancelAll();
     log("trade", `Cancelled ${openOrders.length} open orders`);
     return `Cancelled ${openOrders.length} open orders.`;
-  } catch (err) {
+  } catch (err: any) {
     log("error", `Cancel orders failed: ${err}`);
-    return `Failed to cancel orders: ${err}`;
+    const hint = err?.message?.includes("credentials") ? " Check your API credentials in .env." : "";
+    return `Failed to cancel orders. The Polymarket API returned an error.${hint} Check the event log for details.`;
   }
 }

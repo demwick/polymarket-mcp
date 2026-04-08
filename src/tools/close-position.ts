@@ -16,7 +16,7 @@ export async function handleClosePosition(db: Database.Database, input: z.infer<
   const trade = db.prepare("SELECT * FROM trades WHERE id = ? AND status IN ('simulated', 'executed')").get(input.trade_id) as any;
 
   if (!trade) {
-    return `No open position found with ID ${input.trade_id}.`;
+    return `No open position found with ID ${input.trade_id}. Use \`get_positions\` to see your open positions and their IDs.`;
   }
 
   // Get current market price for P&L calculation

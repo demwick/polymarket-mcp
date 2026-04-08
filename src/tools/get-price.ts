@@ -12,7 +12,7 @@ export const getPriceSchema = z.object({
 export async function handleGetPrice(db: Database.Database, input: z.infer<typeof getPriceSchema>): Promise<string> {
   if (input.condition_id) {
     const info = await getMarketPriceByCondition(input.condition_id);
-    if (!info) return "Could not fetch price for this market.";
+    if (!info) return "Could not fetch price for this market. Verify the condition_id is correct, or the market may have been resolved.";
 
     const price = await getMarketPrice(info.tokenId);
     if (!price) return `Market price: $${info.price.toFixed(4)} (from gamma API)`;
@@ -39,5 +39,5 @@ export async function handleGetPrice(db: Database.Database, input: z.infer<typeo
     return output;
   }
 
-  return "Provide condition_id or set show_positions=true.";
+  return "Please provide a `condition_id` to check a specific market, or set `show_positions=true` to see prices for all your open positions.";
 }

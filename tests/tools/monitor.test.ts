@@ -36,7 +36,7 @@ describe("monitor tools", () => {
   describe("handleStartMonitor", () => {
     it("requires Pro license", async () => {
       mockCheckLicense.mockResolvedValue(false);
-      const result = await handleStartMonitor(monitor, { interval_seconds: 30 });
+      const result = await handleStartMonitor(db, monitor, { interval_seconds: 30 });
       expect(result).toContain("Pro");
     });
 
@@ -44,7 +44,7 @@ describe("monitor tools", () => {
       // Mock fetch to prevent real API calls during tick
       vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json([]));
 
-      const result = await handleStartMonitor(monitor, { interval_seconds: 60 });
+      const result = await handleStartMonitor(db, monitor, { interval_seconds: 60 });
       expect(result).toContain("Monitor started");
       expect(result).toContain("60");
       expect(monitor.getStatus().running).toBe(true);
@@ -53,9 +53,17 @@ describe("monitor tools", () => {
     it("returns message if already running", async () => {
       vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json([]));
 
-      await handleStartMonitor(monitor, { interval_seconds: 30 });
-      const result = await handleStartMonitor(monitor, { interval_seconds: 30 });
+      await handleStartMonitor(db, monitor, { interval_seconds: 30 });
+      const result = await handleStartMonitor(db, monitor, { interval_seconds: 30 });
       expect(result).toContain("already running");
+    });
+
+    it("warns when watchlist is empty", async () => {
+      vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json([]));
+
+      const result = await handleStartMonitor(db, monitor, { interval_seconds: 30 });
+      expect(result).toContain("Monitor started");
+      expect(result).toContain("watchlist is empty");
     });
   });
 

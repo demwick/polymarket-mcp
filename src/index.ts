@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { initializeDb } from "./db/schema.js";
-import { getConfig } from "./utils/config.js";
+import { getConfig, hasLiveCredentials, validateLiveCredentials } from "./utils/config.js";
 import { log } from "./utils/logger.js";
 
 import { BudgetManager } from "./services/budget-manager.js";
@@ -80,7 +80,7 @@ server.tool(
   "start_monitor",
   "Start the wallet monitoring loop to detect and copy new trades (Pro)",
   startMonitorSchema.shape,
-  async (input) => ({ content: [{ type: "text" as const, text: await handleStartMonitor(walletMonitor, startMonitorSchema.parse(input)) }] })
+  async (input) => ({ content: [{ type: "text" as const, text: await handleStartMonitor(db, walletMonitor, startMonitorSchema.parse(input)) }] })
 );
 
 server.tool(
@@ -202,6 +202,15 @@ startWebDashboard(db, budgetManager, walletMonitor, tradeExecutor, config.DASHBO
 async function main() {
   log("info", "Starting Polymarket Copy Trader MCP Server");
   log("info", `Mode: ${config.COPY_MODE} | Budget: $${config.DAILY_BUDGET}/day | Port: ${config.DASHBOARD_PORT}`);
+
+  if (config.COPY_MODE === "live" && !hasLiveCredentials()) {
+    const missing = validateLiveCredentials();
+    log("warn", `Live mode enabled but missing credentials: ${missing.join(", ")}. Orders will fail until configured.`);
+  }
+
+  if (!config.MCP_LICENSE_KEY) {
+    log("info", "No MCP_LICENSE_KEY set — running in Free tier. Pro features are locked.");
+  }
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
