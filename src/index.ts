@@ -64,6 +64,9 @@ import { setSafetyLimitsSchema, handleSetSafetyLimits } from "./tools/set-safety
 import { handleGetOpenOrders } from "./tools/get-open-orders.js";
 import { getOrderStatusSchema, handleGetOrderStatus } from "./tools/get-order-status.js";
 import { getMarketEventsSchema, handleGetMarketEvents } from "./tools/get-market-events.js";
+import { compareMarketsSchema, handleCompareMarkets } from "./tools/compare-markets.js";
+import { featuredMarketsSchema, handleFeaturedMarkets } from "./tools/featured-markets.js";
+import { optimizePortfolioSchema, handleOptimizePortfolio } from "./tools/optimize-portfolio.js";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -389,6 +392,27 @@ server.tool(
   "Browse event groups — find all markets under an event (e.g. 'election', 'UFC', 'NBA')",
   getMarketEventsSchema.shape,
   safe("get_market_events", async (input) => ({ content: [{ type: "text" as const, text: await handleGetMarketEvents(getMarketEventsSchema.parse(input)) }] }))
+);
+
+server.tool(
+  "compare_markets",
+  "Side-by-side comparison of 2-5 markets — price, spread, depth, quality",
+  compareMarketsSchema.shape,
+  safe("compare_markets", async (input) => ({ content: [{ type: "text" as const, text: await handleCompareMarkets(compareMarketsSchema.parse(input)) }] }))
+);
+
+server.tool(
+  "featured_markets",
+  "Top markets by liquidity — filter by category (politics, sports, crypto, pop-culture, business, science)",
+  featuredMarketsSchema.shape,
+  safe("featured_markets", async (input) => ({ content: [{ type: "text" as const, text: await handleFeaturedMarkets(featuredMarketsSchema.parse(input)) }] }))
+);
+
+server.tool(
+  "optimize_portfolio",
+  "AI-powered portfolio optimization with conservative/balanced/aggressive strategies — SL/TP suggestions, concentration warnings, cut/hold/take-profit recommendations",
+  optimizePortfolioSchema.shape,
+  safe("optimize_portfolio", async (input) => ({ content: [{ type: "text" as const, text: await handleOptimizePortfolio(db, optimizePortfolioSchema.parse(input)) }] }))
 );
 
 // Start MCP server
