@@ -13,10 +13,12 @@ export interface RawActivity {
   side: string;
   size: number | string;
   price: number | string;
+  usdcSize?: number | string;
   asset: string;
   timestamp: number | string;
   conditionId: string;
   title: string;
+  slug?: string;
   outcome: string;
   transactionHash: string;
 }
@@ -28,6 +30,7 @@ export interface FilteredTrade {
   asset: string;
   conditionId: string;
   title: string;
+  slug: string;
   outcome: string;
   timestamp: string;
   investedAmount: number;
@@ -49,15 +52,21 @@ export function filterNewTrades(
         : new Date(a.timestamp).getTime();
       const age = (now - ts) / 1000;
       if (age > maxAgeSeconds) return false;
+      const usdcSize = a.usdcSize
+        ? (typeof a.usdcSize === "number" ? a.usdcSize : parseFloat(a.usdcSize))
+        : null;
       const size = typeof a.size === "number" ? a.size : parseFloat(a.size);
       const price = typeof a.price === "number" ? a.price : parseFloat(a.price);
-      const invested = size * price;
+      const invested = usdcSize ?? (size * price);
       if (invested < minConviction) return false;
       return true;
     })
     .map((a) => {
       const size = typeof a.size === "number" ? a.size : parseFloat(a.size);
       const price = typeof a.price === "number" ? a.price : parseFloat(a.price);
+      const usdcSize = a.usdcSize
+        ? (typeof a.usdcSize === "number" ? a.usdcSize : parseFloat(a.usdcSize))
+        : null;
       const ts = typeof a.timestamp === "number"
         ? new Date(a.timestamp * 1000).toISOString()
         : a.timestamp;
@@ -68,9 +77,10 @@ export function filterNewTrades(
         asset: a.asset,
         conditionId: a.conditionId,
         title: a.title,
+        slug: a.slug ?? "",
         outcome: a.outcome,
         timestamp: ts,
-        investedAmount: size * price,
+        investedAmount: usdcSize ?? (size * price),
       };
     });
 }
@@ -164,11 +174,13 @@ export class WalletMonitor {
             continue;
           }
 
-          const marketInfo = await resolveMarketByConditionId(trade.conditionId);
+          const marketInfo = trade.slug
+            ? null
+            : await resolveMarketByConditionId(trade.conditionId);
 
           const order: TradeOrder = {
             traderAddress: wallet.address,
-            marketSlug: marketInfo?.slug ?? trade.title,
+            marketSlug: trade.slug || marketInfo?.slug || trade.title,
             conditionId: trade.conditionId,
             tokenId: marketInfo?.tokenId ?? trade.asset,
             price: trade.price,
