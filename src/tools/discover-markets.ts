@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { log } from "../utils/logger.js";
+import { fetchWithRetry } from "../utils/fetch.js";
 
 const GAMMA_API_BASE = "https://gamma-api.polymarket.com";
 
@@ -38,7 +39,7 @@ export async function handleDiscoverMarkets(input: DiscoverMarketsInput): Promis
   log("info", `Discovering markets: ending=${input.ending}, category=${input.category ?? "all"}`);
 
   try {
-    const res = await fetch(url);
+    const res = await fetchWithRetry(url);
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     const data = await res.json();
 

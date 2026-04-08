@@ -30,6 +30,11 @@ import { getPositionsSchema, handleGetPositions } from "./tools/get-positions.js
 import { closePositionSchema, handleClosePosition } from "./tools/close-position.js";
 import { discoverMarketsSchema, handleDiscoverMarkets } from "./tools/discover-markets.js";
 import { getPriceSchema, handleGetPrice } from "./tools/get-price.js";
+import { discoverWtaSchema, handleDiscoverWta } from "./tools/discover-wta.js";
+import { placeStinkBidSchema, handlePlaceStinkBid } from "./tools/place-stink-bid.js";
+import { cancelOrdersSchema, handleCancelOrders } from "./tools/cancel-orders.js";
+import { logCycleSchema, handleLogCycle } from "./tools/log-cycle.js";
+import { handleCheckExits } from "./tools/check-exits.js";
 
 import { startWebDashboard } from "./web/server.js";
 
@@ -155,6 +160,41 @@ server.tool(
   async (input) => ({ content: [{ type: "text" as const, text: await handleGetPrice(db, getPriceSchema.parse(input)) }] })
 );
 
+server.tool(
+  "discover_wta",
+  "Find today's WTA tennis matches on Polymarket with stink bid prices (favorite at discount)",
+  discoverWtaSchema.shape,
+  async (input) => ({ content: [{ type: "text" as const, text: await handleDiscoverWta(discoverWtaSchema.parse(input)) }] })
+);
+
+server.tool(
+  "place_stink_bid",
+  "Place stink bids (limit orders at discount) on all today's WTA favorites (Pro)",
+  placeStinkBidSchema.shape,
+  async (input) => ({ content: [{ type: "text" as const, text: await handlePlaceStinkBid(db, tradeExecutor, placeStinkBidSchema.parse(input)) }] })
+);
+
+server.tool(
+  "cancel_orders",
+  "Cancel all open/pending limit orders on Polymarket (Pro, live mode only)",
+  cancelOrdersSchema.shape,
+  async () => ({ content: [{ type: "text" as const, text: await handleCancelOrders(tradeExecutor) }] })
+);
+
+server.tool(
+  "check_exits",
+  "Check all open positions for resolution (market resolved or trader exit) and update P&L",
+  {},
+  async () => ({ content: [{ type: "text" as const, text: await handleCheckExits(db) }] })
+);
+
+server.tool(
+  "log_cycle",
+  "Log an agent cycle result to the database for dashboard tracking",
+  logCycleSchema.shape,
+  (input) => ({ content: [{ type: "text" as const, text: handleLogCycle(db, logCycleSchema.parse(input)) }] })
+);
+
 // Start web dashboard
 startWebDashboard(db, budgetManager, walletMonitor, tradeExecutor, config.DASHBOARD_PORT);
 
@@ -171,3 +211,14 @@ main().catch((err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });
+
+// Graceful shutdown
+function shutdown() {
+  log("info", "Shutting down...");
+  walletMonitor.stop();
+  db.close();
+  process.exit(0);
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
