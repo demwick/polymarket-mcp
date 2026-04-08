@@ -68,7 +68,7 @@ const positionTracker = new PositionTracker(db);
 const walletMonitor = new WalletMonitor(db, budgetManager, tradeExecutor, config.MIN_CONVICTION, 300, positionTracker);
 
 const server = new McpServer({
-  name: "polymarket-mcp",
+  name: "polymarket-trader-mcp",
   version: pkg.version,
 });
 

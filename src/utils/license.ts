@@ -16,7 +16,7 @@ export async function checkLicense(): Promise<boolean> {
     const response = await fetchWithRetry("https://mcp-marketplace.io/api/v1/verify-license", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, slug: "polymarket-mcp" }),
+      body: JSON.stringify({ key, slug: "polymarket-trader-mcp" }),
       retries: 1,
       timeoutMs: 5_000,
     });
@@ -42,9 +42,9 @@ export async function checkLicense(): Promise<boolean> {
 export function requirePro(toolName: string): string {
   const key = process.env.MCP_LICENSE_KEY;
   if (key) {
-    return `"${toolName}" requires a valid Pro license. Your current license key was not accepted.\n\nVerify your key at https://mcp-marketplace.io/server/polymarket-mcp or check your internet connection (the license server may be unreachable).`;
+    return `"${toolName}" requires a valid Pro license. Your current license key was not accepted.\n\nVerify your key at https://mcp-marketplace.io/server/polymarket-trader-mcp or check your internet connection (the license server may be unreachable).`;
   }
-  return `"${toolName}" is a Pro feature. Get a license at https://mcp-marketplace.io/server/polymarket-mcp\n\nSet MCP_LICENSE_KEY in your environment to unlock Pro features.`;
+  return `"${toolName}" is a Pro feature. Get a license at https://mcp-marketplace.io/server/polymarket-trader-mcp\n\nSet MCP_LICENSE_KEY in your environment to unlock Pro features.`;
 }
 
 export function resetLicenseCache(): void {

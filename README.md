@@ -26,7 +26,7 @@ MCP server for trading, analyzing, and automating Polymarket prediction markets 
 ### Installation
 
 ```bash
-npm install -g polymarket-mcp
+npm install -g polymarket-trader-mcp
 ```
 
 Or add to Claude Code config (`~/.claude/settings.json`):
@@ -36,7 +36,7 @@ Or add to Claude Code config (`~/.claude/settings.json`):
   "mcpServers": {
     "polymarket": {
       "command": "npx",
-      "args": ["polymarket-mcp"]
+      "args": ["polymarket-trader-mcp"]
     }
   }
 }
@@ -141,13 +141,13 @@ cp .env.example .env
 | Rebalance | - | Full |
 | Trade history | - | Full |
 
-Get a Pro license at [mcp-marketplace.io](https://mcp-marketplace.io/server/polymarket-mcp).
+Get a Pro license at [mcp-marketplace.io](https://mcp-marketplace.io/server/polymarket-trader-mcp).
 
 ## Development
 
 ```bash
-git clone https://github.com/demwick/polymarket-mcp.git
-cd polymarket-mcp
+git clone https://github.com/demwick/polymarket-trader-mcp.git
+cd polymarket-trader-mcp
 npm install
 npm run build
 npm test         # 200+ tests
