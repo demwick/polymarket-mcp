@@ -11,8 +11,10 @@ const logs: LogEntry[] = [];
 const MAX_LOGS = 500;
 
 export function log(level: LogLevel, message: string, data?: Record<string, unknown>): void {
+  const now = new Date();
+  const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString();
   const entry: LogEntry = {
-    timestamp: new Date().toISOString(),
+    timestamp: localIso,
     level,
     message,
     data,

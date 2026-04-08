@@ -45,5 +45,28 @@ export function initializeDb(db: Database.Database): void {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS agent_cycles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      agent_name TEXT NOT NULL,
+      strategy TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'ok',
+      positions_open INTEGER DEFAULT 0,
+      positions_closed INTEGER DEFAULT 0,
+      realized_pnl REAL DEFAULT 0,
+      unrealized_pnl REAL DEFAULT 0,
+      win_rate REAL DEFAULT 0,
+      budget_used REAL DEFAULT 0,
+      budget_limit REAL DEFAULT 0,
+      actions_taken TEXT,
+      notes TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_trades_condition_id ON trades(condition_id);
+    CREATE INDEX IF NOT EXISTS idx_trades_trader_address ON trades(trader_address);
+    CREATE INDEX IF NOT EXISTS idx_trades_status ON trades(status);
+    CREATE INDEX IF NOT EXISTS idx_trades_created_at ON trades(created_at);
+    CREATE INDEX IF NOT EXISTS idx_daily_budget_date ON daily_budget(date);
   `);
 }

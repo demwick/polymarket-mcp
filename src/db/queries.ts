@@ -62,6 +62,22 @@ export function recordTrade(db: Database.Database, trade: Omit<TradeRecord, "id"
   return Number(result.lastInsertRowid);
 }
 
+/** Atomically record a trade and update daily budget in a single transaction */
+export function recordTradeWithBudget(
+  db: Database.Database,
+  trade: Omit<TradeRecord, "id" | "pnl" | "created_at" | "resolved_at">,
+  date: string,
+  spendAmount: number,
+  dailyLimit: number
+): number {
+  const txn = db.transaction(() => {
+    const tradeId = recordTrade(db, trade);
+    addDailySpent(db, date, spendAmount, dailyLimit);
+    return tradeId;
+  });
+  return txn();
+}
+
 export function getTradeHistory(db: Database.Database, opts: { limit?: number; trader?: string; status?: string }): TradeRecord[] {
   let sql = "SELECT * FROM trades WHERE 1=1";
   const params: Record<string, unknown> = {};

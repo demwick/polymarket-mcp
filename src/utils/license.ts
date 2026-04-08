@@ -12,17 +12,26 @@ export async function checkLicense(): Promise<boolean> {
   }
 
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5_000);
     const response = await fetch("https://mcp-marketplace.io/api/v1/verify-license", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key, slug: "polymarket-copy-trader" }),
+      signal: controller.signal,
     });
+    clearTimeout(timer);
     const data = await response.json();
     _isLicensed = data.valid === true;
   } catch {
-    // Graceful fallback: if API unreachable, check if key format is valid
-    _isLicensed = key.startsWith("mcp_live_");
-    log("warn", "License API unreachable, using format-based fallback");
+    // API unreachable — deny license unless explicit offline override is set
+    if (process.env.MCP_LICENSE_OFFLINE === "true") {
+      _isLicensed = true;
+      log("warn", "License API unreachable, offline override enabled");
+    } else {
+      _isLicensed = false;
+      log("warn", "License API unreachable, license denied. Set MCP_LICENSE_OFFLINE=true for offline use.");
+    }
   }
 
   return _isLicensed;
