@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymarket Copy Trader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Polymarket Copy Trader</h1>
+    <div id="mode-badge">PREVIEW</div>
+  </header>
+
+  <section id="stats-bar">
+    <div class="stat-card">
+      <span class="label">Budget</span>
+      <span id="budget-text" class="value">$0 / $0</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">P&L</span>
+      <span id="pnl-text" class="value">$0.00</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Win Rate</span>
+      <span id="winrate-text" class="value">0%</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Trades</span>
+      <span id="trades-text" class="value">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="label">Monitor</span>
+      <span id="monitor-text" class="value">Stopped</span>
+    </div>
+  </section>
+
+  <section id="main-content">
+    <div id="trades-section">
+      <h2>Recent Trades</h2>
+      <table id="trades-table">
+        <thead>
+          <tr>
+            <th>Time</th><th>Trader</th><th>Market</th><th>Price</th><th>Amount</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="trades-body"></tbody>
+      </table>
+      <p id="no-trades" class="empty-state">No trades yet</p>
+    </div>
+
+    <div id="watchlist-section">
+      <h2>Watchlist</h2>
+      <div id="watchlist-cards"></div>
+      <p id="no-watchlist" class="empty-state">No wallets being watched</p>
+    </div>
+
+    <div id="logs-section">
+      <h2>Event Log</h2>
+      <div id="log-stream"></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
