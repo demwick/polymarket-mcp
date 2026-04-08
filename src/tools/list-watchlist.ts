@@ -1,7 +1,9 @@
 import Database from "better-sqlite3";
 import { getWatchlist } from "../db/queries.js";
+import { checkLicense, requirePro } from "../utils/license.js";
 
-export function handleListWatchlist(db: Database.Database): string {
+export async function handleListWatchlist(db: Database.Database): Promise<string> {
+  const isPro = await checkLicense(); if (!isPro) return requirePro("list_watchlist");
   const list = getWatchlist(db);
 
   if (list.length === 0) {

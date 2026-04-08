@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { checkMarketQuality } from "../services/market-filter.js";
+import { checkLicense, requirePro } from "../utils/license.js";
 
 export const checkMarketSchema = z.object({
   token_id: z.string(),
@@ -8,6 +9,7 @@ export const checkMarketSchema = z.object({
 });
 
 export async function handleCheckMarket(input: z.infer<typeof checkMarketSchema>): Promise<string> {
+  const isPro = await checkLicense(); if (!isPro) return requirePro("check_market");
   const result = await checkMarketQuality(input.token_id, {
     maxSpread: input.max_spread,
     minDepth: input.min_depth,

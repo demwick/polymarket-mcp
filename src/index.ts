@@ -90,7 +90,7 @@ server.tool(
   "list_watchlist",
   "Show all watched wallet addresses",
   {},
-  safe("list_watchlist", async () => ({ content: [{ type: "text" as const, text: handleListWatchlist(db) }] }))
+  safe("list_watchlist", async () => ({ content: [{ type: "text" as const, text: await handleListWatchlist(db) }] }))
 );
 
 server.tool(

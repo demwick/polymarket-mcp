@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 
+vi.mock("../../src/utils/license.js", () => ({
+  checkLicense: vi.fn().mockResolvedValue(true),
+  requirePro: vi.fn((name: string) => `${name} requires Pro`),
+}));
+
 vi.mock("../../src/utils/fetch.js", () => ({
   fetchWithRetry: vi.fn(async (url: string) => globalThis.fetch(url)),
 }));

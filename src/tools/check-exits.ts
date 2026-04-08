@@ -1,7 +1,9 @@
 import Database from "better-sqlite3";
 import { PositionTracker } from "../services/position-tracker.js";
+import { checkLicense, requirePro } from "../utils/license.js";
 
 export async function handleCheckExits(db: Database.Database): Promise<string> {
+  const isPro = await checkLicense(); if (!isPro) return requirePro("check_exits");
   const tracker = new PositionTracker(db);
   const closed = await tracker.checkExits();
 

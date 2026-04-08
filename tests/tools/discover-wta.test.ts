@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 
+vi.mock("../../src/utils/license.js", () => ({
+  checkLicense: vi.fn().mockResolvedValue(true),
+  requirePro: vi.fn((name: string) => `${name} requires Pro`),
+}));
+
 vi.mock("../../src/services/wta-discovery.js", () => ({
   discoverWtaMarkets: vi.fn().mockResolvedValue([]),
 }));
