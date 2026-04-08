@@ -49,6 +49,10 @@ import { watchMarketSchema, handleWatchMarket } from "./tools/watch-market.js";
 import { rebalanceSchema, handleRebalance } from "./tools/rebalance.js";
 import { scoreTraderSchema, handleScoreTrader } from "./tools/score-trader.js";
 import { checkMarketSchema, handleCheckMarket } from "./tools/check-market.js";
+import { buySchema, handleBuy } from "./tools/buy.js";
+import { sellSchema, handleSell } from "./tools/sell.js";
+import { handleGetBalance } from "./tools/get-balance.js";
+import { searchMarketsSchema, handleSearchMarkets } from "./tools/search-markets.js";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -64,7 +68,7 @@ const positionTracker = new PositionTracker(db);
 const walletMonitor = new WalletMonitor(db, budgetManager, tradeExecutor, config.MIN_CONVICTION, 300, positionTracker);
 
 const server = new McpServer({
-  name: "polymarket-copy-trader",
+  name: "polymarket-mcp",
   version: pkg.version,
 });
 
@@ -269,6 +273,34 @@ server.tool(
   "Analyze watchlist traders and remove underperformers based on conviction score and win rate (Pro)",
   rebalanceSchema.shape,
   safe("rebalance", async (input) => ({ content: [{ type: "text" as const, text: await handleRebalance(db, rebalanceSchema.parse(input)) }] }))
+);
+
+server.tool(
+  "buy",
+  "Buy shares on a Polymarket market — provide condition_id and amount",
+  buySchema.shape,
+  safe("buy", async (input) => ({ content: [{ type: "text" as const, text: await handleBuy(db, tradeExecutor, buySchema.parse(input)) }] }))
+);
+
+server.tool(
+  "sell",
+  "Sell an open position — by trade_id or condition_id",
+  sellSchema.shape,
+  safe("sell", async (input) => ({ content: [{ type: "text" as const, text: await handleSell(db, tradeExecutor, sellSchema.parse(input)) }] }))
+);
+
+server.tool(
+  "get_balance",
+  "View account balance, daily budget usage, invested amount, and P&L summary",
+  {},
+  safe("get_balance", async () => ({ content: [{ type: "text" as const, text: await handleGetBalance(db, budgetManager) }] }))
+);
+
+server.tool(
+  "search_markets",
+  "Search Polymarket markets by keyword (e.g. 'bitcoin', 'election', 'UFC')",
+  searchMarketsSchema.shape,
+  safe("search_markets", async (input) => ({ content: [{ type: "text" as const, text: await handleSearchMarkets(searchMarketsSchema.parse(input)) }] }))
 );
 
 // Start MCP server

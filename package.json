@@ -1,10 +1,10 @@
 {
-  "name": "polymarket-copy-trader",
+  "name": "polymarket-mcp",
   "version": "1.0.0",
-  "description": "MCP server for Polymarket copy trading — discover top traders and copy their trades",
+  "description": "MCP server for Polymarket — trade, analyze markets, copy top traders, and manage your portfolio via AI",
   "main": "dist/index.js",
   "bin": {
-    "polymarket-copy-trader": "dist/index.js"
+    "polymarket-mcp": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -18,9 +18,11 @@
   "keywords": [
     "mcp",
     "polymarket",
-    "copy-trading",
+    "trading",
     "prediction-markets",
-    "ai-agent"
+    "copy-trading",
+    "ai-agent",
+    "smart-money"
   ],
   "license": "MIT",
   "engines": {

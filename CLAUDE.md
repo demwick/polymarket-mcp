@@ -16,11 +16,11 @@ npx tsc --noEmit       # type-check without emitting
 
 ## Architecture
 
-MCP server for Polymarket copy trading. Three-layer design: **Tools → Services → Database**.
+MCP server for Polymarket trading and automation. Three-layer design: **Tools → Services → Database**.
 
 ### Entry Point & MCP Server
 
-`src/index.ts` bootstraps everything: opens SQLite DB, creates service instances (BudgetManager, TradeExecutor, WalletMonitor, PositionTracker), registers 30 MCP tools, and handles graceful shutdown (SIGINT/SIGTERM). Dashboard is a separate project (`polymarket-dashboard`).
+`src/index.ts` bootstraps everything: opens SQLite DB, creates service instances (BudgetManager, TradeExecutor, WalletMonitor, PositionTracker), registers 34 MCP tools, and handles graceful shutdown (SIGINT/SIGTERM). Dashboard is a separate project (`polymarket-dashboard`).
 
 ### Layers
 

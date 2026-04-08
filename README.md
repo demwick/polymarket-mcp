@@ -1,17 +1,20 @@
-# Polymarket Copy Trader MCP Server
+# Polymarket MCP Server
 
-MCP server for discovering, analyzing, and copying top Polymarket traders through Claude Code or any MCP-compatible client.
+MCP server for trading, analyzing, and automating Polymarket prediction markets through Claude Code or any MCP-compatible client.
 
 ## Features
 
-- **Copy Trading** — Watch top traders and automatically copy their trades (preview or live)
+- **Direct Trading** — Buy and sell on any Polymarket market with market or limit orders
+- **Market Search** — Find markets by keyword, category, or end date
+- **Copy Trading** — Watch top traders and automatically copy their trades
 - **Smart Money Flow** — Detect when multiple top traders converge on the same market
 - **Backtest** — Simulate copying any trader's historical trades before committing capital
 - **Conviction Scoring** — 0-100 score based on win rate, consistency, experience, and diversity
 - **Market Quality Filter** — Auto-skip illiquid markets based on spread, depth, and price range
 - **Stop-Loss / Take-Profit** — Set automated exit rules on any position
 - **Auto-Rebalance** — Remove underperforming traders from your watchlist
-- **30 MCP Tools** — Full control via natural language through Claude Code
+- **Price History** — Historical price data with sparkline charts
+- **34 MCP Tools** — Full control via natural language through Claude Code
 
 ## Quick Start
 
@@ -23,7 +26,7 @@ MCP server for discovering, analyzing, and copying top Polymarket traders throug
 ### Installation
 
 ```bash
-npm install -g polymarket-copy-trader
+npm install -g polymarket-mcp
 ```
 
 Or add to Claude Code config (`~/.claude/settings.json`):
@@ -33,7 +36,7 @@ Or add to Claude Code config (`~/.claude/settings.json`):
   "mcpServers": {
     "polymarket": {
       "command": "npx",
-      "args": ["polymarket-copy-trader"]
+      "args": ["polymarket-mcp"]
     }
   }
 }
@@ -63,6 +66,7 @@ cp .env.example .env
 ### Discovery
 | Tool | Description |
 |------|-------------|
+| `search_markets` | Search markets by keyword (bitcoin, election, UFC...) |
 | `discover_traders` | Find top traders by PnL and volume |
 | `discover_markets` | Find markets by end date and category |
 | `discover_wta` | Find WTA tennis markets with stink bid prices |
@@ -71,12 +75,19 @@ cp .env.example .env
 ### Trading
 | Tool | Description |
 |------|-------------|
-| `watch_wallet` | Add/remove traders from watchlist |
-| `start_monitor` | Start copy trading loop |
-| `stop_monitor` | Stop copy trading loop |
+| `buy` | Buy shares on any market — direct trading |
+| `sell` | Sell an open position |
 | `place_stink_bid` | Place limit orders at discount |
 | `cancel_orders` | Cancel all open orders |
 | `go_live` | Switch from preview to live mode |
+
+### Copy Trading
+| Tool | Description |
+|------|-------------|
+| `watch_wallet` | Add/remove traders from watchlist |
+| `start_monitor` | Start copy trading loop |
+| `stop_monitor` | Stop copy trading loop |
+| `rebalance` | Remove underperforming traders |
 
 ### Analysis
 | Tool | Description |
@@ -91,12 +102,12 @@ cp .env.example .env
 ### Portfolio
 | Tool | Description |
 |------|-------------|
+| `get_balance` | Account balance, budget, and P&L summary |
 | `get_portfolio` | Multi-wallet overview with P&L per trader |
 | `get_positions` | Open/closed positions |
 | `close_position` | Manually close a position |
 | `set_exit_rules` | Set stop-loss and take-profit levels |
 | `check_exits` | Check positions for resolution |
-| `rebalance` | Remove underperforming traders |
 | `watch_market` | Market watchlist with price alerts |
 
 ### Utilities
@@ -120,7 +131,7 @@ cp .env.example .env
 | Smart flow | - | Full |
 | Rebalance | - | Full |
 
-Get a Pro license at [mcp-marketplace.io](https://mcp-marketplace.io/server/polymarket-copy-trader).
+Get a Pro license at [mcp-marketplace.io](https://mcp-marketplace.io/server/polymarket-mcp).
 
 ## Development
 
