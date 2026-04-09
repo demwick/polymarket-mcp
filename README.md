@@ -1,5 +1,6 @@
 # Polymarket Trader MCP Server
 
+[![SafeSkill 94/100](https://img.shields.io/badge/SafeSkill-94%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-trader-mcp)
 [![MCP Marketplace](https://mcp-marketplace.io/api/badge?slug=polymarket-mcp-server)](https://mcp-marketplace.io/server/polymarket-mcp-server)
 [![Node.js](https://img.shields.io/badge/node-18%2B-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org)
@@ -7,7 +8,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
 [![Tools](https://img.shields.io/badge/tools-49-orange)]()
-[![SafeSkill 94/100](https://img.shields.io/badge/SafeSkill-94%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-trader-mcp)
 [![polymarket-trader-mcp MCP server](https://glama.ai/mcp/servers/demwick/polymarket-trader-mcp/badges/card.svg)](https://glama.ai/mcp/servers/demwick/polymarket-trader-mcp)
 
 
