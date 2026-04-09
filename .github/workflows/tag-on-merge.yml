@@ -1,4 +1,4 @@
-name: Tag on merge
+name: Tag and release
 
 on:
   pull_request:
@@ -9,23 +9,55 @@ permissions:
   contents: read
 
 jobs:
-  tag:
+  tag-and-release:
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Release v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: main
 
       - name: Create and push tag
+        id: tag
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          echo "Tagging v${VERSION}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "v${VERSION}"
           git push origin "v${VERSION}"
-          echo "## Tagged v${VERSION}" >> $GITHUB_STEP_SUMMARY
-          echo "Release workflow will publish to npm automatically." >> $GITHUB_STEP_SUMMARY
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - run: npm run build
+      - run: npm test
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
+        with:
+          tag_name: v${{ steps.tag.outputs.version }}
+          generate_release_notes: true
+
+      - name: Summary
+        run: |
+          VERSION=${{ steps.tag.outputs.version }}
+          echo "## Released v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "- Tagged v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "- Published to npm" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Release created" >> $GITHUB_STEP_SUMMARY
