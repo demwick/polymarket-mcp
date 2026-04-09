@@ -17,5 +17,9 @@ jobs:
       - run: npm ci
       - name: Type check
         run: npx tsc --noEmit
-      - name: Test
-        run: npm test
+      - name: Test with coverage
+        run: npm run test:coverage
+      - uses: codecov/codecov-action@v5
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: false
