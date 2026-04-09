@@ -3,7 +3,7 @@ import { backtestTrader } from "../services/backtester.js";
 import { checkLicense, requirePro } from "../utils/license.js";
 
 export const backtestTraderSchema = z.object({
-  address: z.string().describe("Ethereum wallet address of the trader to backtest"),
+  address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Must be a valid Ethereum address (0x + 40 hex chars)").describe("Ethereum wallet address of the trader to backtest"),
   copy_budget: z.number().min(1).max(100).optional().default(5).describe("Simulated $ amount per trade (default: $5)"),
 });
 
