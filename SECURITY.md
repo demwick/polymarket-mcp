@@ -17,6 +17,7 @@ If you discover a security vulnerability, please report it responsibly:
    - Potential impact
 3. You will receive an acknowledgment within 48 hours.
 4. A fix will be developed and released as soon as possible.
+5. Responsible disclosure will be credited in release notes.
 
 ## Scope
 
