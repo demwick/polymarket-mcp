@@ -7,3 +7,4 @@ dist/
 .firecrawl/
 .DS_Store
 docs/superpowers/
+coverage/

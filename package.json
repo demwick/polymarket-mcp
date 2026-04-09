@@ -13,6 +13,7 @@
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build"
   },
   "type": "module",
@@ -56,6 +57,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.5.2",
     "@types/ws": "^8.18.1",
+    "@vitest/coverage-v8": "^4.1.4",
     "typescript": "^6.0.2",
     "vitest": "^4.1.3"
   }
