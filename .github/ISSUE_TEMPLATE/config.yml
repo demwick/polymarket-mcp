@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Discussion
+    url: https://github.com/demwick/polymarket-trader-mcp/discussions
+    about: Ask questions, share ideas, or show what you've built
+  - name: Security Vulnerability
+    url: https://github.com/demwick/polymarket-trader-mcp/security/policy
+    about: Report security vulnerabilities responsibly (do NOT open a public issue)

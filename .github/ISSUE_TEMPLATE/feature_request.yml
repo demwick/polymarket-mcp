@@ -1,0 +1,59 @@
+name: Feature Request
+description: Suggest a new tool, feature, or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to make polymarket-trader-mcp better? We'd love to hear it!
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Which area does this feature relate to?
+      options:
+        - New MCP Tool
+        - Market Discovery & Analysis
+        - Trading & Orders
+        - Copy Trading & Wallet Monitoring
+        - Portfolio & Risk Management
+        - Configuration & Setup
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: What problem does this solve, or what workflow does it enable?
+      placeholder: "I want to be able to ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How do you envision this working?
+      placeholder: |
+        A new tool `markets_xxx` that ...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any workarounds or alternative approaches you've tried?
+
+  - type: dropdown
+    id: willingness
+    attributes:
+      label: Contribution
+      description: Would you be willing to submit a PR for this?
+      options:
+        - "Yes, I'd like to work on this"
+        - "I can help test"
+        - "No, just suggesting"

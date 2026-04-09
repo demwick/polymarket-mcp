@@ -19,12 +19,18 @@
   "type": "module",
   "keywords": [
     "mcp",
+    "mcp-server",
+    "model-context-protocol",
     "polymarket",
-    "trading",
     "prediction-markets",
+    "trading",
+    "trading-bot",
     "copy-trading",
     "ai-agent",
-    "smart-money"
+    "smart-money",
+    "claude",
+    "ai-trading",
+    "portfolio-management"
   ],
   "license": "MIT",
   "repository": {
