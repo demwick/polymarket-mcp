@@ -19,6 +19,7 @@ ENV COPY_MODE=preview
 ENV DAILY_BUDGET=20
 ENV PORT=3000
 ENV DB_PATH=/app/data/copytrader.db
+RUN mkdir -p /app/data
 
 EXPOSE 3000
 
