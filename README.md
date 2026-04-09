@@ -295,6 +295,20 @@ docker run -p 3000:3000 -v mcp-data:/app/data \
 
 ---
 
+## Permissions & Capabilities
+
+This package has a transparent, minimal footprint. Full details: **[PERMISSIONS.md](PERMISSIONS.md)**
+
+| Category | Scope |
+|----------|-------|
+| **Network** | 3 Polymarket APIs (HTTPS) + 1 WebSocket for live prices + license check |
+| **Filesystem** | Single SQLite database file + `.env` read at startup |
+| **Environment** | API credentials (live mode only), budget config, mode selection |
+| **Processes** | None — no child processes, no shell commands |
+| **Telemetry** | None — no analytics, no tracking, no data sent to third parties |
+
+---
+
 ## Development
 
 ```bash

@@ -3,8 +3,8 @@ import Database from "better-sqlite3";
 export function initializeDb(db: Database.Database): void {
   db.pragma("journal_mode = WAL");
 
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS watchlist (
+  const ddl = [
+    `CREATE TABLE IF NOT EXISTS watchlist (
       address TEXT PRIMARY KEY,
       alias TEXT,
       roi REAL,
@@ -13,9 +13,8 @@ export function initializeDb(db: Database.Database): void {
       trade_count INTEGER,
       added_at TEXT DEFAULT (datetime('now')),
       last_checked TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS trades (
+    )`,
+    `CREATE TABLE IF NOT EXISTS trades (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       trader_address TEXT NOT NULL,
       market_slug TEXT,
@@ -32,21 +31,18 @@ export function initializeDb(db: Database.Database): void {
       resolved_at TEXT,
       current_price REAL,
       exit_reason TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS daily_budget (
+    )`,
+    `CREATE TABLE IF NOT EXISTS daily_budget (
       date TEXT NOT NULL,
       spent REAL DEFAULT 0,
       limit_amount REAL NOT NULL,
       PRIMARY KEY (date)
-    );
-
-    CREATE TABLE IF NOT EXISTS config (
+    )`,
+    `CREATE TABLE IF NOT EXISTS config (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS agent_cycles (
+    )`,
+    `CREATE TABLE IF NOT EXISTS agent_cycles (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       agent_name TEXT NOT NULL,
       strategy TEXT NOT NULL,
@@ -61,9 +57,8 @@ export function initializeDb(db: Database.Database): void {
       actions_taken TEXT,
       notes TEXT,
       created_at TEXT DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS market_watchlist (
+    )`,
+    `CREATE TABLE IF NOT EXISTS market_watchlist (
       condition_id TEXT PRIMARY KEY,
       token_id TEXT,
       title TEXT,
@@ -72,18 +67,21 @@ export function initializeDb(db: Database.Database): void {
       alert_above REAL,
       last_price REAL,
       added_at TEXT DEFAULT (datetime('now'))
-    );
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_trades_condition_id ON trades(condition_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_trades_trader_address ON trades(trader_address)`,
+    `CREATE INDEX IF NOT EXISTS idx_trades_status ON trades(status)`,
+    `CREATE INDEX IF NOT EXISTS idx_trades_created_at ON trades(created_at)`,
+    `CREATE INDEX IF NOT EXISTS idx_daily_budget_date ON daily_budget(date)`,
+  ];
 
-    CREATE INDEX IF NOT EXISTS idx_trades_condition_id ON trades(condition_id);
-    CREATE INDEX IF NOT EXISTS idx_trades_trader_address ON trades(trader_address);
-    CREATE INDEX IF NOT EXISTS idx_trades_status ON trades(status);
-    CREATE INDEX IF NOT EXISTS idx_trades_created_at ON trades(created_at);
-    CREATE INDEX IF NOT EXISTS idx_daily_budget_date ON daily_budget(date);
-  `);
+  for (const sql of ddl) {
+    db.prepare(sql).run();
+  }
 
   // Migrations — add columns safely
   const cols = db.prepare("PRAGMA table_info(trades)").all() as { name: string }[];
   const colNames = new Set(cols.map((c) => c.name));
-  if (!colNames.has("sl_price")) db.exec("ALTER TABLE trades ADD COLUMN sl_price REAL");
-  if (!colNames.has("tp_price")) db.exec("ALTER TABLE trades ADD COLUMN tp_price REAL");
+  if (!colNames.has("sl_price")) db.prepare("ALTER TABLE trades ADD COLUMN sl_price REAL").run();
+  if (!colNames.has("tp_price")) db.prepare("ALTER TABLE trades ADD COLUMN tp_price REAL").run();
 }
