@@ -208,6 +208,61 @@ Claude Code / Cursor / AI Client
 
 ---
 
+## HTTP Transport & Deployment
+
+The server supports two transport modes:
+
+| Mode | Activation | Use case |
+|------|-----------|----------|
+| **stdio** (default) | `npx polymarket-trader-mcp` | Claude Code, Cursor, local MCP clients |
+| **HTTP** | `--http` flag or `PORT` env var | Smithery, Railway, Docker, remote hosting |
+
+### Starting in HTTP mode
+
+```bash
+# Flag
+node dist/index.js --http
+
+# Or set PORT (defaults to 3000)
+PORT=8080 node dist/index.js
+```
+
+### Endpoints
+
+| Path | Method | Description |
+|------|--------|-------------|
+| `/mcp` | POST | MCP protocol endpoint (Streamable HTTP transport) |
+| `/health` | GET | Health check — returns `{ status, version, db }` |
+| `/.well-known/mcp/server-card.json` | GET | Server discovery card for Smithery |
+| `/` | GET | Server info with version and endpoint list |
+
+### Authentication
+
+Set `MCP_API_KEY` to require Bearer token auth on the `/mcp` endpoint:
+
+```bash
+MCP_API_KEY=my-secret-key node dist/index.js --http
+# Clients must send: Authorization: Bearer my-secret-key
+```
+
+When `MCP_API_KEY` is not set, the `/mcp` endpoint is open (suitable for local/private networks).
+
+### Docker deployment
+
+The included `Dockerfile` builds a multi-stage production image that runs in HTTP mode:
+
+```bash
+docker build -t polymarket-mcp .
+docker run -p 3000:3000 -v mcp-data:/app/data \
+  -e MCP_API_KEY=my-secret-key \
+  -e DAILY_BUDGET=50 \
+  polymarket-mcp
+```
+
+`DB_PATH` (default `/app/data/copytrader.db`) controls where SQLite data is persisted — mount a volume to keep it across restarts.
+
+---
+
 ## Configuration
 
 | Variable | Required | Default | Description |
