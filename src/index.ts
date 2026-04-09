@@ -77,7 +77,7 @@ import { watchPriceSchema, handleWatchPrice } from "./tools/watch-price.js";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH = path.join(__dirname, "..", "copytrader.db");
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, "..", "copytrader.db");
 
 const config = getConfig();
 const db = new Database(DB_PATH);
@@ -579,8 +579,14 @@ async function startHttpServer() {
 
     // Health check
     if (url.pathname === "/health") {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ status: "ok", version: pkg.version }));
+      try {
+        db.prepare("SELECT 1").get();
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ status: "ok", version: pkg.version, db: "connected" }));
+      } catch {
+        res.writeHead(503, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ status: "degraded", version: pkg.version, db: "error" }));
+      }
       return;
     }
 
