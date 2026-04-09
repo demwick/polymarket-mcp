@@ -71,10 +71,10 @@ describe("discoverWtaMarkets", () => {
 
   it("discovers WTA markets with stink bid prices", async () => {
     vi.spyOn(globalThis, "fetch").mockImplementation(async (url) => {
-      const urlStr = String(url);
+      const parsedUrl = new URL(String(url));
 
       // ESPN API
-      if (urlStr.includes("espn.com")) {
+      if (parsedUrl.hostname === "espn.com" || parsedUrl.hostname.endsWith(".espn.com")) {
         return Response.json({
           events: [{
             name: "Madrid Open",
@@ -91,7 +91,7 @@ describe("discoverWtaMarkets", () => {
       }
 
       // Gamma events API
-      if (urlStr.includes("gamma-api") && urlStr.includes("slug=")) {
+      if ((parsedUrl.hostname === "gamma-api.polymarket.com" || parsedUrl.hostname.endsWith(".gamma-api.polymarket.com")) && parsedUrl.searchParams.has("slug")) {
         return Response.json([{
           slug: "wta-ponchet-kuderme-2026-04-08",
           markets: [{
@@ -102,7 +102,7 @@ describe("discoverWtaMarkets", () => {
       }
 
       // CLOB markets API
-      if (urlStr.includes("clob.polymarket.com/markets/")) {
+      if (parsedUrl.hostname === "clob.polymarket.com" && parsedUrl.pathname.startsWith("/markets/")) {
         return Response.json({
           condition_id: "0xabc123",
           question: "Madrid: Ponchet vs Kudermetova",
