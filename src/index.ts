@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { createServer } from "http";
+import { randomUUID } from "crypto";
 import Database from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -426,6 +429,8 @@ server.tool(
 );
 
 // Start MCP server
+const useHttp = process.argv.includes("--http") || !!process.env.PORT;
+
 async function main() {
   log("info", "Starting Polymarket Trader MCP Server");
   log("info", `Mode: ${config.COPY_MODE} | Budget: $${config.DAILY_BUDGET}/day`);
@@ -439,8 +444,59 @@ async function main() {
     log("info", "No MCP_LICENSE_KEY set — running in Free tier. Pro features are locked.");
   }
 
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+  if (useHttp) {
+    await startHttpServer();
+  } else {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+  }
+}
+
+async function startHttpServer() {
+  const port = parseInt(process.env.PORT || "3000", 10);
+
+  const httpTransport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: () => randomUUID(),
+  });
+
+  await server.connect(httpTransport);
+
+  const httpServer = createServer(async (req, res) => {
+    const url = new URL(req.url || "/", `http://${req.headers.host}`);
+
+    // Health check
+    if (url.pathname === "/health") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ status: "ok", version: pkg.version }));
+      return;
+    }
+
+    // MCP endpoint
+    if (url.pathname === "/mcp") {
+      await httpTransport.handleRequest(req, res);
+      return;
+    }
+
+    // Root redirect
+    if (url.pathname === "/") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({
+        name: "polymarket-trader-mcp",
+        version: pkg.version,
+        mcp: "/mcp",
+        health: "/health",
+      }));
+      return;
+    }
+
+    res.writeHead(404);
+    res.end("Not Found");
+  });
+
+  httpServer.listen(port, () => {
+    log("info", `HTTP transport listening on port ${port}`);
+    log("info", `MCP endpoint: http://localhost:${port}/mcp`);
+  });
 }
 
 main().catch((err) => {
