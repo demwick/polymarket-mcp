@@ -20,7 +20,7 @@ MCP server for Polymarket trading and automation. Three-layer design: **Tools â†
 
 ### Entry Point & MCP Server
 
-`src/index.ts` bootstraps everything: opens SQLite DB, creates service instances (BudgetManager, TradeExecutor, WalletMonitor, PositionTracker), registers 34 MCP tools, and handles graceful shutdown (SIGINT/SIGTERM). Dashboard is a separate project (`polymarket-dashboard`).
+`src/index.ts` bootstraps everything: opens SQLite DB, creates service instances (BudgetManager, TradeExecutor, WalletMonitor, PositionTracker), registers 48 MCP tools, and handles graceful shutdown (SIGINT/SIGTERM). Dashboard is a separate project (`polymarket-dashboard`).
 
 ### Layers
 

@@ -4,7 +4,9 @@
 Trade, analyze, and automate Polymarket prediction markets via AI
 
 ## Description
-Full-featured MCP server for Polymarket — search markets, execute trades, copy top traders, analyze smart money flow, backtest strategies, and manage your portfolio. All through natural language via Claude Code, Cursor, or any MCP-compatible AI assistant. Includes 34 tools spanning direct trading, market discovery, trader analysis, copy trading automation, and portfolio management with stop-loss/take-profit.
+🛡️ Verified Safe — SafeSkill 97/100 (audited 2026-04-11, zero taint flows, all metric categories passing). See SECURITY.md and PERMISSIONS.md for full disclosure.
+
+Full-featured MCP server for Polymarket — search markets, execute trades, copy top traders, analyze smart money flow, backtest strategies, and manage your portfolio. All through natural language via Claude Code, Cursor, or any MCP-compatible AI assistant. Includes 48 tools spanning direct trading, market discovery, trader analysis, copy trading automation, and portfolio management with stop-loss/take-profit.
 
 ## Setup Requirements
 - `MCP_LICENSE_KEY` (optional): License key for Pro features. Get it at https://mcp-marketplace.io/server/polymarket-trader-mcp
