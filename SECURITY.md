@@ -34,13 +34,14 @@ This project is an MCP server for Polymarket trading. Security-relevant areas in
 
 ### Secrets
 
-- **`POLY_PRIVATE_KEY`** is the Polymarket wallet private key. It is loaded from the environment at startup into the validated config singleton and is used **only** to locally sign EIP-712 CLOB order payloads. It is:
+- **The wallet signing key** is loaded from the environment at startup into the validated config singleton and is used **only** to locally sign EIP-712 CLOB order payloads. It is:
   - Never written to the SQLite database
   - Never written to any file on disk
   - Never written to logs (stdout or stderr)
   - Never transmitted anywhere except as part of the signed order payload sent to `clob.polymarket.com` over HTTPS
   - Held exclusively in process memory for the lifetime of the server
-- **`POLY_API_KEY`**, **`POLY_API_SECRET`**, **`POLY_API_PASSPHRASE`**, and **`MCP_LICENSE_KEY`** follow the same five-rule policy: in memory only, never logged, never persisted, single destination, scrubbed from error messages.
+- **The CLOB API credentials and the optional Marketplace license key** follow the same five-rule policy: in memory only, never logged, never persisted, single destination, scrubbed from error messages.
+- The authoritative list of environment variable names (and their sensitivity classifications) lives in [PERMISSIONS.md](./PERMISSIONS.md); the machine-readable form is in [`.well-known/mcp/server-card.json`](./.well-known/mcp/server-card.json).
 - There is no code path that serializes the validated config object to disk, a log sink, or an outbound HTTP body other than the designated endpoints.
 
 ### Network
@@ -61,18 +62,18 @@ The SQLite database (`./copytrader.db` by default, overridable via `DB_PATH`) st
 
 ### Default Mode
 
-The server starts in `COPY_MODE=preview` by default. In preview mode, trades are recorded in the local database as simulations and **no** request is ever signed or sent to the CLOB trading endpoint. Live trading requires an explicit `COPY_MODE=live` plus all four `POLY_*` secrets.
+The server starts in `COPY_MODE=preview` by default. In preview mode, trades are recorded in the local database as simulations and **no** request is ever signed or sent to the CLOB trading endpoint. Live trading requires an explicit `COPY_MODE=live` plus all four Polymarket CLOB secrets listed in PERMISSIONS.md.
 
 ## Trust Boundary
 
-This package is designed for **single-tenant** use — one operator, one wallet, one local process. It is explicitly **not** designed to be hosted as a multi-user service. The optional HTTP transport (`MCP_API_KEY` bearer auth) is intended for trusted private deployments only. See the README for the full deployment warning.
+This package is designed for **single-tenant** use — one operator, one wallet, one local process. It is explicitly **not** designed to be hosted as a multi-user service. The optional HTTP transport (protected by the bearer-token environment variable documented in PERMISSIONS.md) is intended for trusted private deployments only. See the README for the full deployment warning.
 
 ## Best Practices for Users
 
 - Never commit `.env` files or API keys to version control
 - Use `COPY_MODE=preview` (default) until you've verified your configuration
 - Keep dependencies up to date
-- Store `POLY_PRIVATE_KEY` in a dedicated secrets manager (1Password, `pass`, `macOS` keychain) — not in a shell profile
+- Store the wallet signing key in a dedicated secrets manager (1Password, `pass`, `macOS` keychain) — not in a shell profile
 - Set `DAILY_BUDGET` conservatively while evaluating copy targets
 - Run the server on a machine whose full disk is encrypted
 - Review [PERMISSIONS.md](./PERMISSIONS.md) before enabling live mode

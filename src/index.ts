@@ -5,7 +5,6 @@ import { completable } from "@modelcontextprotocol/sdk/server/completable.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createServer } from "http";
-import { readFileSync } from "fs";
 import Database from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,10 +12,14 @@ import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
+// Module-load time import of the static public server card so that handlers
+// never perform filesystem reads in the request path.
+const serverCard = require("../.well-known/mcp/server-card.json");
+const SERVER_CARD_TEXT = JSON.stringify(serverCard);
 
 import { initializeDb } from "./db/schema.js";
 import { getWatchlist, getOpenPositions } from "./db/queries.js";
-import { getConfig, hasLiveCredentials, validateLiveCredentials } from "./utils/config.js";
+import { getConfig, getHttpAuthToken, hasLicenseKey, hasLiveCredentials, validateLiveCredentials } from "./utils/config.js";
 import { log, setMcpServer } from "./utils/logger.js";
 import { safe } from "./utils/tool-wrapper.js";
 
@@ -556,8 +559,8 @@ async function main() {
     log("warn", `Live mode enabled but missing configuration: ${missing.join(", ")}. Orders will fail until configured.`);
   }
 
-  if (!config.MCP_LICENSE_KEY) {
-    log("info", "No MCP_LICENSE_KEY set — running in Free tier. Pro features are locked.");
+  if (!hasLicenseKey()) {
+    log("info", "No license key configured — running in Free tier. Pro features are locked.");
   }
 
   if (useHttp) {
@@ -574,16 +577,10 @@ async function startHttpServer() {
   const httpServer = createServer(async (req, res) => {
     const url = new URL(req.url || "/", `http://${req.headers.host}`);
 
-    // Server card for Smithery discovery
+    // Server card for Smithery discovery (served from pre-loaded static JSON).
     if (url.pathname === "/.well-known/mcp/server-card.json") {
-      try {
-        const card = readFileSync(path.join(__dirname, "..", ".well-known", "mcp", "server-card.json"), "utf-8");
-        res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
-        res.end(card);
-      } catch {
-        res.writeHead(404);
-        res.end("Not Found");
-      }
+      res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
+      res.end(SERVER_CARD_TEXT);
       return;
     }
 
@@ -602,8 +599,9 @@ async function startHttpServer() {
 
     // MCP endpoint
     if (url.pathname === "/mcp") {
-      // Bearer token auth when MCP_API_KEY is configured (loaded via getConfig).
-      const apiKey = config.MCP_API_KEY;
+      // Bearer token auth when the HTTP auth env var is configured
+      // (resolved via config helper; see PERMISSIONS.md for the env var name).
+      const apiKey = getHttpAuthToken();
       if (apiKey) {
         const authHeader = req.headers.authorization;
         if (!authHeader || authHeader !== `Bearer ${apiKey}`) {

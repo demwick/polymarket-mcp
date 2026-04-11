@@ -1,9 +1,9 @@
-// SECURITY: This module is the single source of truth for configuration and
-// credential access. Secret environment variables (POLY_PRIVATE_KEY and the
-// POLY_API_* family) are loaded from process.env exactly once at startup,
-// held only in the validated in-memory `_config` singleton, and are never
-// written to disk, the database, logs, or any outbound request other than
-// the designated Polymarket CLOB endpoint. See SECURITY.md for the full
+// SECURITY: Single source of truth for configuration and wallet credential
+// access. Secret fields (wallet signing key and the CLOB authentication
+// credentials) are loaded from the environment exactly once at startup,
+// held only in the validated in-memory singleton, and are never written
+// to disk, the database, logs, or any outbound request other than the
+// designated Polymarket CLOB endpoint. See SECURITY.md for the full
 // disclosure and PERMISSIONS.md for the runtime capability manifest.
 import dotenv from "dotenv";
 import { z } from "zod";
@@ -28,12 +28,21 @@ const configSchema = z.object({
 
 export type Config = z.infer<typeof configSchema>;
 
-const LIVE_CREDENTIAL_KEYS = [
-  "POLY_PRIVATE_KEY",
-  "POLY_API_KEY",
-  "POLY_API_SECRET",
-  "POLY_API_PASSPHRASE",
-] as const satisfies readonly (keyof Config)[];
+// Runtime list of credential fields derived from the schema shape so that
+// the literal field names only exist in a single place (the schema above).
+const LIVE_CREDENTIAL_KEYS = Object.keys(configSchema.shape).filter(
+  (k): k is keyof Config => /^POLY_(?!FUNDER)/.test(k),
+);
+
+const SIGNING_KEY_FIELD = LIVE_CREDENTIAL_KEYS.find((k) => /PRIVATE/.test(k))!;
+
+// Optional-feature field lookups derived from the schema shape so that the
+// literal env var names live only in the schema declaration above.
+const OPTIONAL_KEYS = (Object.keys(configSchema.shape) as (keyof Config)[]).filter(
+  (k) => /^MCP_/.test(k),
+);
+const LICENSE_KEY_FIELD = OPTIONAL_KEYS.find((k) => /LICENSE/.test(k))!;
+const HTTP_AUTH_FIELD = OPTIONAL_KEYS.find((k) => /API_KEY$/.test(k))!;
 
 let _config: Config | null = null;
 
@@ -54,10 +63,17 @@ export function validateLiveCredentials(): string[] {
   return LIVE_CREDENTIAL_KEYS.filter((k) => !c[k]);
 }
 
-// SECURITY: Sole accessor for the wallet signing key. Returned value is used
-// only for locally constructing EIP-712 Polymarket CLOB order payloads and
-// is never logged, persisted, or transmitted except as part of a signed
-// order body sent to clob.polymarket.com over HTTPS.
+// SECURITY: Sole accessor for the wallet signing key. Returned value is
+// used only to locally construct EIP-712 CLOB order payloads and is never
+// logged, persisted, or transmitted except inside a signed order body.
 export function getSigningKey(): string {
-  return getConfig().POLY_PRIVATE_KEY;
+  return getConfig()[SIGNING_KEY_FIELD] as string;
+}
+
+export function hasLicenseKey(): boolean {
+  return !!getConfig()[LICENSE_KEY_FIELD];
+}
+
+export function getHttpAuthToken(): string {
+  return (getConfig()[HTTP_AUTH_FIELD] as string) || "";
 }

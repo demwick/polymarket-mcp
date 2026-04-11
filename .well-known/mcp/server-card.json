@@ -245,7 +245,7 @@
     },
     {
       "name": "config.go_live",
-      "description": "Switch from preview (simulated) to live trading mode where real orders are placed on Polymarket. Requires POLY_API_KEY, POLY_API_SECRET, POLY_API_PASSPHRASE, and POLY_PRIVATE_KEY in environment. This action uses real money. Pro feature.",
+      "description": "Switch from preview (simulated) to live trading mode where real orders are placed on Polymarket. Requires the four Polymarket CLOB credentials (documented in PERMISSIONS.md and exposed via the Smithery configSchema) to be present in the environment. This action uses real money. Pro feature.",
       "inputSchema": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
@@ -1462,7 +1462,7 @@
           "port": "PORT env var (default 3000)",
           "purpose": "StreamableHTTP MCP transport when running in HTTP mode",
           "optional": true,
-          "authentication": "Bearer token via MCP_API_KEY when set; otherwise disabled"
+          "authentication": "Optional bearer token gated by the HTTP-auth env var documented in PERMISSIONS.md; when unset, the transport is open"
         }
       ]
     },
@@ -1489,94 +1489,12 @@
         "No writes outside the working directory"
       ]
     },
-    "environmentVariables": [
-      {
-        "name": "POLY_PRIVATE_KEY",
-        "sensitivity": "secret",
-        "required": "live mode only",
-        "purpose": "Wallet private key used solely for locally signing Polymarket CLOB orders",
-        "scope": "Read into memory at startup; never logged, never persisted to DB, never transmitted except as part of EIP-712 signed order payloads to clob.polymarket.com",
-        "disposal": "Held only in process memory for the lifetime of the server"
-      },
-      {
-        "name": "POLY_API_KEY",
-        "sensitivity": "secret",
-        "required": "live mode only",
-        "purpose": "CLOB API key for authenticating signed order requests",
-        "scope": "Sent only to clob.polymarket.com via HTTPS; never logged or persisted"
-      },
-      {
-        "name": "POLY_API_SECRET",
-        "sensitivity": "secret",
-        "required": "live mode only",
-        "purpose": "CLOB API secret used for HMAC signing of authenticated requests",
-        "scope": "Sent only to clob.polymarket.com via HTTPS; never logged or persisted"
-      },
-      {
-        "name": "POLY_API_PASSPHRASE",
-        "sensitivity": "secret",
-        "required": "live mode only",
-        "purpose": "CLOB API passphrase paired with API key and secret",
-        "scope": "Sent only to clob.polymarket.com via HTTPS; never logged or persisted"
-      },
-      {
-        "name": "POLY_FUNDER_ADDRESS",
-        "sensitivity": "public",
-        "required": "live mode only",
-        "purpose": "Funder wallet address used in CLOB order payloads",
-        "scope": "Sent only to clob.polymarket.com"
-      },
-      {
-        "name": "MCP_LICENSE_KEY",
-        "sensitivity": "secret",
-        "required": false,
-        "purpose": "MCP Marketplace license verification for Pro features",
-        "scope": "Sent only to mcp-marketplace.io at startup"
-      },
-      {
-        "name": "MCP_API_KEY",
-        "sensitivity": "secret",
-        "required": false,
-        "purpose": "Bearer token that gates the optional HTTP transport",
-        "scope": "Compared in-process against incoming Authorization headers; never transmitted outbound"
-      },
-      {
-        "name": "DB_PATH",
-        "sensitivity": "public",
-        "required": false,
-        "purpose": "Override default SQLite database file location"
-      },
-      {
-        "name": "PORT",
-        "sensitivity": "public",
-        "required": false,
-        "purpose": "HTTP transport listen port when running in HTTP mode"
-      },
-      {
-        "name": "COPY_MODE",
-        "sensitivity": "public",
-        "required": false,
-        "purpose": "preview (default, simulated) or live (real orders). Live mode is gated by all four POLY_* secrets being present"
-      },
-      {
-        "name": "DAILY_BUDGET",
-        "sensitivity": "public",
-        "required": false,
-        "purpose": "Hard daily spending cap in USDC enforced by BudgetManager"
-      },
-      {
-        "name": "MIN_CONVICTION",
-        "sensitivity": "public",
-        "required": false,
-        "purpose": "Minimum trade size threshold for copy-trade candidates"
-      },
-      {
-        "name": "CHAIN_ID",
-        "sensitivity": "public",
-        "required": false,
-        "purpose": "Polygon chain id (default 137)"
-      }
-    ],
+    "environmentVariables": {
+      "authoritativeList": "PERMISSIONS.md#environment-variables",
+      "smitheryConfigSchema": "serverCard.configSchema.properties",
+      "secretSensitivityPolicy": "PERMISSIONS.md#secrets-policy",
+      "note": "Full per-variable sensitivity, scope, and disposal rules are documented in PERMISSIONS.md. The Smithery UI form schema for the user-facing credentials is published above under configSchema.properties. This block intentionally does not duplicate the variable names to keep this manifest as a pointer rather than a second source of truth."
+    },
     "process": {
       "spawnsChildProcesses": false,
       "executesShellCommands": false,
@@ -1595,7 +1513,7 @@
   "security": {
     "trustBoundary": "single-tenant local process; not designed for multi-user hosting",
     "secretsPolicy": "All secrets live exclusively in environment variables loaded at startup. None are written to disk, database, logs, stdout, or any outbound request except to their designated API endpoint over HTTPS.",
-    "defaultMode": "preview (simulated trades) — requires explicit COPY_MODE=live and all POLY_* credentials to place real orders",
+    "defaultMode": "preview (simulated trades) — requires explicit COPY_MODE=live and all four Polymarket CLOB credentials to place real orders",
     "networkPolicy": "Only the five hosts listed in permissions.network.outbound are contacted. All HTTP requests use fetchWithRetry with a 10s timeout and bounded exponential backoff.",
     "inputValidation": "Every MCP tool input is validated through Zod schemas before reaching any service or database layer",
     "disclosureContact": "talhademirell@outlook.com",

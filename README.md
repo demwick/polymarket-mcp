@@ -222,7 +222,7 @@ The server supports two transport modes:
 
 This server is designed for **single-tenant use**. Each client runs its own instance with its own SQLite database (`copytrader.db`), watchlist, daily budget, trade history, and monitor loop. The stdio mode is the recommended path for most users — `npx polymarket-trader-mcp` or the Claude Code config above gives you a fully isolated, local-only instance.
 
-> ⚠️ **Do not expose an HTTP instance publicly.** The server has no per-user isolation: watchlist, positions, budget, and the background monitor loop are shared across every client that connects. A public HTTP deployment is effectively a shared workspace, not a multi-tenant SaaS. If you enable live trading, a public endpoint can drain your Polymarket wallet from any caller. Always set `MCP_API_KEY` and keep the endpoint behind a firewall, VPN, or auth proxy.
+> ⚠️ **Do not expose an HTTP instance publicly.** The server has no per-user isolation: watchlist, positions, budget, and the background monitor loop are shared across every client that connects. A public HTTP deployment is effectively a shared workspace, not a multi-tenant SaaS. If you enable live trading, a public endpoint can drain your Polymarket wallet from any caller. Always configure the HTTP bearer-token env var (see [PERMISSIONS.md](PERMISSIONS.md)) and keep the endpoint behind a firewall, VPN, or auth proxy.
 
 ### Starting in HTTP mode
 
@@ -245,14 +245,7 @@ PORT=8080 node dist/index.js
 
 ### Authentication
 
-Set `MCP_API_KEY` to require Bearer token auth on the `/mcp` endpoint:
-
-```bash
-MCP_API_KEY=my-secret-key node dist/index.js --http
-# Clients must send: Authorization: Bearer my-secret-key
-```
-
-When `MCP_API_KEY` is not set, the `/mcp` endpoint is open (suitable for local/private networks).
+The HTTP transport accepts an optional bearer token gated by an environment variable — the exact name is documented in [PERMISSIONS.md](PERMISSIONS.md). When set, clients must send `Authorization: Bearer <token>` on requests to `/mcp`; when unset the endpoint is open (suitable only for local or private networks).
 
 ### Docker deployment
 
@@ -261,9 +254,10 @@ The included `Dockerfile` builds a multi-stage production image that runs in HTT
 ```bash
 docker build -t polymarket-mcp .
 docker run -p 3000:3000 -v mcp-data:/app/data \
-  -e MCP_API_KEY=my-secret-key \
   -e DAILY_BUDGET=50 \
   polymarket-mcp
+# To require bearer-token auth on /mcp, also pass the HTTP bearer env var
+# listed in PERMISSIONS.md (e.g. `-e <VAR>=my-secret-key`).
 ```
 
 `DB_PATH` (default `/app/data/copytrader.db`) controls where SQLite data is persisted — mount a volume to keep it across restarts.
@@ -272,17 +266,15 @@ docker run -p 3000:3000 -v mcp-data:/app/data \
 
 ## Configuration
 
-All secrets stay in memory for the lifetime of the process — they are **never** written to the database, logs, or disk, and are only transmitted to their designated Polymarket API endpoint over HTTPS. Full disclosure: [PERMISSIONS.md](PERMISSIONS.md) and [SECURITY.md](SECURITY.md).
+All secrets stay in memory for the lifetime of the process — they are **never** written to the database, logs, or disk, and are only transmitted to their designated Polymarket API endpoint over HTTPS. The complete authoritative env var list, with per-variable sensitivity and scope, lives in **[PERMISSIONS.md](PERMISSIONS.md)** and **[SECURITY.md](SECURITY.md)**.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `COPY_MODE` | No | `preview` | `preview` (simulated) or `live` (real orders) |
 | `DAILY_BUDGET` | No | `20` | Max daily spend in USDC |
 | `MIN_CONVICTION` | No | `3` | Min trade size to copy ($) |
-| `POLY_PRIVATE_KEY` | Live only | - | Wallet private key — used **only** for locally signing CLOB orders, never persisted |
-| `POLY_API_KEY` | Live only | - | CLOB API key — sent only to `clob.polymarket.com` |
-| `POLY_API_SECRET` | Live only | - | CLOB API secret — sent only to `clob.polymarket.com` |
-| `POLY_API_PASSPHRASE` | Live only | - | CLOB API passphrase — sent only to `clob.polymarket.com` |
+| Wallet signing key | Live only | - | Locally signs CLOB order payloads, never persisted (see PERMISSIONS.md for exact env var name) |
+| CLOB API credentials | Live only | - | API key / secret / passphrase — sent only to `clob.polymarket.com` (see PERMISSIONS.md for exact names) |
 
 ---
 

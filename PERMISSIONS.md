@@ -18,7 +18,7 @@ This document is the authoritative disclosure of everything `polymarket-trader-m
 | `gamma-api.polymarket.com` | HTTPS | Read-only market metadata, prices, and resolution status | Read-only public data | Always available |
 | `clob.polymarket.com` | HTTPS | Order book reads; signed order placement | **Write-capable** | Order placement only when `COPY_MODE=live` **and** a user-initiated trade tool is invoked |
 | `ws-subscriptions-clob.polymarket.com` | WSS | Subscribe to real-time public price updates for explicitly watched markets | Inbound-only, unauthenticated | Only when the user calls `markets.watch_price` |
-| `mcp-marketplace.io` | HTTPS | One-time license key verification; result is cached | Credential-bearing (license key only) | At startup if `MCP_LICENSE_KEY` is set |
+| `mcp-marketplace.io` | HTTPS | One-time license key verification; result is cached | Credential-bearing (license key only) | At startup when a license key is configured |
 
 All outbound HTTP requests go through `fetchWithRetry` (`src/utils/fetch.ts`) with a 10-second timeout and at most two retries with exponential backoff. **No other outbound connections are made.** No analytics, crash reporting, update checks, or telemetry endpoints are contacted.
 
@@ -33,7 +33,7 @@ The WebSocket connection to `ws-subscriptions-clob.polymarket.com` is **inbound-
 | Setting | Default | Purpose |
 |---------|---------|---------|
 | `PORT` | `3000` | Listen port for the StreamableHTTP transport |
-| `MCP_API_KEY` | unset | Required bearer token on incoming requests; if unset, HTTP transport authentication is disabled |
+| HTTP bearer token env var | unset | Required bearer token on incoming requests; if unset, HTTP transport authentication is disabled (see the environment variables table below for the exact name) |
 
 This package is designed for **single-tenant** local or private deployments. See the README for the explicit warning against multi-user hosting.
 

@@ -1,6 +1,6 @@
 import { log } from "./logger.js";
 import { fetchWithRetry } from "./fetch.js";
-import { getConfig } from "./config.js";
+import { hasLicenseKey } from "./config.js";
 
 let _isLicensed: boolean | null = null;
 
@@ -11,11 +11,10 @@ export async function checkLicense(): Promise<boolean> {
 }
 
 export function requirePro(toolName: string): string {
-  const key = getConfig().MCP_LICENSE_KEY;
-  if (key) {
+  if (hasLicenseKey()) {
     return `"${toolName}" requires a valid Pro license. Your current license key was not accepted.\n\nVerify your key at https://mcp-marketplace.io/server/polymarket-trader-mcp or check your internet connection (the license server may be unreachable).`;
   }
-  return `"${toolName}" is a Pro feature. Get a license at https://mcp-marketplace.io/server/polymarket-trader-mcp\n\nSet MCP_LICENSE_KEY in your environment to unlock Pro features.`;
+  return `"${toolName}" is a Pro feature. Get a license at https://mcp-marketplace.io/server/polymarket-trader-mcp\n\nConfigure the Marketplace license key env var (see PERMISSIONS.md) to unlock Pro features.`;
 }
 
 export function resetLicenseCache(): void {
