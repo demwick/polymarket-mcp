@@ -3,6 +3,7 @@
   "version": "1.6.1",
   "description": "MCP server for Polymarket — trade, analyze markets, copy top traders, and manage your portfolio via AI",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "polymarket-trader-mcp": "dist/index.js"
   },
@@ -49,6 +50,9 @@
     "dist/**/*",
     ".well-known/**/*",
     "README.md",
+    "PERMISSIONS.md",
+    "SECURITY.md",
+    "safeskill.manifest.json",
     ".env.example"
   ],
   "dependencies": {

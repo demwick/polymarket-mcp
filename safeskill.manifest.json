@@ -1,0 +1,102 @@
+{
+  "$schema": "https://safeskill.dev/schema/manifest/v1.json",
+  "name": "polymarket-trader-mcp",
+  "displayName": "Polymarket Trader MCP",
+  "version": "1.6.1",
+  "description": "MCP server for Polymarket prediction markets — trading, market discovery, copy trading, smart money flow detection, backtesting, and portfolio management.",
+  "author": "demwick",
+  "license": "MIT",
+  "repository": "https://github.com/demwick/polymarket-trader-mcp",
+  "homepage": "https://github.com/demwick/polymarket-trader-mcp#readme",
+  "documentation": {
+    "readme": "README.md",
+    "permissions": "PERMISSIONS.md",
+    "security": "SECURITY.md",
+    "machineReadableCard": ".well-known/mcp/server-card.json"
+  },
+  "trustModel": "single-tenant",
+  "deployment": {
+    "primary": "stdio",
+    "optional": ["streamable-http"],
+    "note": "Designed for single-operator local deployment. Not intended for multi-tenant hosting. See README.md#deployment-model-—-read-this-first for the full warning."
+  },
+  "capabilities": {
+    "trading": {
+      "modes": ["preview", "live"],
+      "defaultMode": "preview",
+      "liveModeRequiresExplicitOptIn": true,
+      "budgetEnforcement": "daily cap via BudgetManager service",
+      "marketplaces": ["polymarket.com"]
+    },
+    "dataStorage": {
+      "type": "sqlite",
+      "local": true,
+      "pathConfigurable": true,
+      "storesCredentials": false,
+      "storesPii": false
+    },
+    "network": {
+      "outboundHosts": [
+        "data-api.polymarket.com",
+        "gamma-api.polymarket.com",
+        "clob.polymarket.com",
+        "ws-subscriptions-clob.polymarket.com",
+        "mcp-marketplace.io"
+      ],
+      "websocketScope": "inbound-only public price stream; no credentials or user identity transmitted",
+      "telemetry": "none",
+      "analytics": "none",
+      "crashReporting": "none"
+    },
+    "filesystem": {
+      "read": [".env"],
+      "readWrite": ["./copytrader.db (configurable via DB_PATH)"],
+      "scope": "working directory only"
+    },
+    "process": {
+      "spawnsChildProcesses": false,
+      "executesShellCommands": false,
+      "usesDynamicCodeExecution": false
+    }
+  },
+  "secrets": {
+    "lifecycle": "loaded from environment at startup into an in-memory config singleton, never persisted, never logged, never mirrored to the database, never transmitted outbound except to a single designated endpoint over HTTPS",
+    "storagePolicy": "environment variables only",
+    "authoritativeList": "PERMISSIONS.md#environment-variables",
+    "machineReadableConfigSchema": ".well-known/mcp/server-card.json#/configSchema/properties"
+  },
+  "inputValidation": {
+    "framework": "zod",
+    "surface": "every MCP tool input and every environment variable",
+    "failureMode": "tool responses with validation errors; startup exits on invalid env"
+  },
+  "testing": {
+    "framework": "vitest",
+    "coverage": "unit + integration; 205 tests across 40 files",
+    "databaseIsolation": "in-memory SQLite per test"
+  },
+  "dependencies": {
+    "runtime": [
+      "@modelcontextprotocol/sdk",
+      "@polymarket/clob-client",
+      "@ethersproject/wallet",
+      "better-sqlite3",
+      "ws",
+      "zod",
+      "dotenv"
+    ],
+    "noInstallScripts": true,
+    "noPostInstall": true
+  },
+  "contact": {
+    "securityDisclosure": "talhademirell@outlook.com",
+    "issues": "https://github.com/demwick/polymarket-trader-mcp/issues"
+  },
+  "declaredVerifiableClaims": [
+    "All outbound hosts are declared in the outboundHosts list",
+    "No child process spawning or shell execution",
+    "No dynamic code execution (eval, Function)",
+    "Input validation via zod on all tool and environment surfaces",
+    "TypeScript declarations published via dist/index.d.ts"
+  ]
+}
