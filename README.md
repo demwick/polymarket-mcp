@@ -10,7 +10,7 @@
 [![MCP Protocol](https://img.shields.io/badge/MCP-1.0-purple)](https://modelcontextprotocol.io)
 [![Tools](https://img.shields.io/badge/tools-48-orange)]()
 [![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
-[![SafeSkill 94/100](https://img.shields.io/badge/SafeSkill-94%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-trader-mcp)
+[![SafeSkill 97/100](https://img.shields.io/badge/SafeSkill-97%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-trader-mcp)
 [![Socket Badge](https://socket.dev/api/badge/npm/package/polymarket-trader-mcp)](https://socket.dev/npm/package/polymarket-trader-mcp)
 [![Snyk](https://snyk.io/test/github/demwick/polymarket-trader-mcp/badge.svg)](https://snyk.io/test/github/demwick/polymarket-trader-mcp)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/demwick/polymarket-trader-mcp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/demwick/polymarket-trader-mcp)
