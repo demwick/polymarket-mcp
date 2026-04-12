@@ -1,21 +1,21 @@
 # Polymarket Agent MCP Server
 
 [![npm version](https://img.shields.io/npm/v/polymarket-agent-mcp)](https://www.npmjs.com/package/polymarket-agent-mcp)
+[![CI](https://github.com/demwick/polymarket-agent-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/demwick/polymarket-agent-mcp/actions/workflows/ci.yml)
 [![GitHub stars](https://img.shields.io/github/stars/demwick/polymarket-agent-mcp)](https://github.com/demwick/polymarket-agent-mcp)
 [![GitHub last commit](https://img.shields.io/github/last-commit/demwick/polymarket-agent-mcp)](https://github.com/demwick/polymarket-agent-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-18%2B-brightgreen)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org)
 [![MCP Protocol](https://img.shields.io/badge/MCP-1.0-purple)](https://modelcontextprotocol.io)
-[![Tools](https://img.shields.io/badge/tools-48-orange)]()
-[![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
+[![Tools](https://img.shields.io/badge/tools-48-orange)](#tool-overview)
+[![Tests](https://img.shields.io/badge/tests-207%20passing-brightgreen)](tests/)
 [![SafeSkill 97/100](https://img.shields.io/badge/SafeSkill-97%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-agent-mcp)
 [![Socket Badge](https://socket.dev/api/badge/npm/package/polymarket-agent-mcp)](https://socket.dev/npm/package/polymarket-agent-mcp)
 [![Snyk](https://snyk.io/test/github/demwick/polymarket-agent-mcp/badge.svg)](https://snyk.io/test/github/demwick/polymarket-agent-mcp)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/demwick/polymarket-agent-mcp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/demwick/polymarket-agent-mcp)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12433/badge)](https://www.bestpractices.dev/projects/12433)
 [![MCP Marketplace](https://mcp-marketplace.io/api/badge?slug=polymarket-mcp-server)](https://mcp-marketplace.io/server/polymarket-mcp-server)
-[![Smithery](https://smithery.ai/badge/@demwick/polymarket-agent-mcp)](https://smithery.ai/server/@demwick/polymarket-agent-mcp)
 
 **Trade, analyze, and automate Polymarket prediction markets through AI.**
 
@@ -240,7 +240,7 @@ PORT=8080 node dist/index.js
 |------|--------|-------------|
 | `/mcp` | POST | MCP protocol endpoint (Streamable HTTP transport) |
 | `/health` | GET | Health check — returns `{ status, version, db }` |
-| `/.well-known/mcp/server-card.json` | GET | Server discovery card for Smithery |
+| `/.well-known/mcp/server-card.json` | GET | MCP discovery card (tools, permissions, data handling) |
 | `/` | GET | Server info with version and endpoint list |
 
 ### Authentication

@@ -245,7 +245,7 @@
     },
     {
       "name": "config.go_live",
-      "description": "Switch from preview (simulated) to live trading mode where real orders are placed on Polymarket. Requires the four Polymarket CLOB credentials (documented in PERMISSIONS.md and exposed via the Smithery configSchema) to be present in the environment. This action uses real money. Pro feature.",
+      "description": "Switch from preview (simulated) to live trading mode where real orders are placed on Polymarket. Requires the four Polymarket CLOB credentials (documented in PERMISSIONS.md) to be present in the environment. This action uses real money. Pro feature.",
       "inputSchema": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
@@ -1491,9 +1491,9 @@
     },
     "environmentVariables": {
       "authoritativeList": "PERMISSIONS.md#environment-variables",
-      "smitheryConfigSchema": "serverCard.configSchema.properties",
+      "configSchemaPointer": "serverCard.configSchema.properties",
       "secretSensitivityPolicy": "PERMISSIONS.md#secrets-policy",
-      "note": "Full per-variable sensitivity, scope, and disposal rules are documented in PERMISSIONS.md. The Smithery UI form schema for the user-facing credentials is published above under configSchema.properties. This block intentionally does not duplicate the variable names to keep this manifest as a pointer rather than a second source of truth."
+      "note": "Full per-variable sensitivity, scope, and disposal rules are documented in PERMISSIONS.md. The user-facing credential form schema is published above under configSchema.properties. This block intentionally does not duplicate the variable names to keep this manifest as a pointer rather than a second source of truth."
     },
     "process": {
       "spawnsChildProcesses": false,
