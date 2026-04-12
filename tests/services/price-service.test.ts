@@ -11,11 +11,11 @@ describe("getMarketPrice", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns price from order book", async () => {
+  it("returns best bid/ask regardless of array order (CLOB sorts bids asc, asks desc)", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json({
-        bids: [{ price: "0.45" }, { price: "0.44" }],
-        asks: [{ price: "0.47" }, { price: "0.48" }],
+        bids: [{ price: "0.40" }, { price: "0.42" }, { price: "0.45" }], // ascending → best is last
+        asks: [{ price: "0.55" }, { price: "0.50" }, { price: "0.47" }], // descending → best is last
       })
     );
 
@@ -71,50 +71,37 @@ describe("getMarketPriceByCondition", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns price from gamma API with JSON string outcomePrices", async () => {
+  it("returns yes-side price and token from CLOB market response", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json([{
-        outcomePrices: JSON.stringify([0.65, 0.35]),
-        clobTokenIds: JSON.stringify(["tok_abc", "tok_def"]),
-      }])
+      Response.json({
+        condition_id: "cond123",
+        tokens: [
+          { token_id: "tok_yes", outcome: "Yes", price: 0.65 },
+          { token_id: "tok_no", outcome: "No", price: 0.35 },
+        ],
+      })
     );
 
     const result = await getMarketPriceByCondition("cond123");
     expect(result).not.toBeNull();
     expect(result!.price).toBeCloseTo(0.65, 4);
-    expect(result!.tokenId).toBe("tok_abc");
+    expect(result!.tokenId).toBe("tok_yes");
   });
 
-  it("handles array outcomePrices (not string)", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json([{
-        outcomePrices: [0.55, 0.45],
-        clobTokenIds: ["tok_abc"],
-      }])
-    );
-
+  it("returns null when tokens array is missing", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ condition_id: "cond123" }));
     const result = await getMarketPriceByCondition("cond123");
-    expect(result).not.toBeNull();
-    expect(result!.price).toBeCloseTo(0.55, 4);
-    expect(result!.tokenId).toBe("tok_abc");
+    expect(result).toBeNull();
   });
 
-  it("handles comma-separated outcomePrices fallback", async () => {
+  it("returns null when yes token is missing", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json([{
-        outcomePrices: "0.70,0.30",
-        clobTokenIds: "tok_xyz",
-      }])
+      Response.json({
+        condition_id: "cond123",
+        tokens: [{ token_id: "tok_no", outcome: "No", price: 0.8 }],
+      })
     );
-
     const result = await getMarketPriceByCondition("cond123");
-    expect(result).not.toBeNull();
-    expect(result!.price).toBeCloseTo(0.70, 4);
-  });
-
-  it("returns null on empty response", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(Response.json([]));
-    const result = await getMarketPriceByCondition("cond_none");
     expect(result).toBeNull();
   });
 
@@ -130,13 +117,20 @@ describe("getMarketPriceByCondition", () => {
     expect(result).toBeNull();
   });
 
-  it("handles missing outcomePrices", async () => {
+  it("handles missing price field with 0", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      Response.json([{ clobTokenIds: ["tok1"] }])
+      Response.json({
+        condition_id: "cond123",
+        tokens: [
+          { token_id: "tok_yes", outcome: "Yes" },
+          { token_id: "tok_no", outcome: "No" },
+        ],
+      })
     );
 
     const result = await getMarketPriceByCondition("cond123");
     expect(result).not.toBeNull();
     expect(result!.price).toBe(0);
+    expect(result!.tokenId).toBe("tok_yes");
   });
 });

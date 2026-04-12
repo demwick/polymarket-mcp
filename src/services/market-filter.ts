@@ -44,11 +44,13 @@ export async function checkMarketQuality(
     }
 
     const book = await res.json();
-    const bids = book.bids ?? [];
-    const asks = book.asks ?? [];
+    const bids: { price: string; size: string }[] = book.bids ?? [];
+    const asks: { price: string; size: string }[] = book.asks ?? [];
 
-    const bestBid = bids.length > 0 ? parseFloat(bids[0].price) : 0;
-    const bestAsk = asks.length > 0 ? parseFloat(asks[0].price) : 0;
+    // Polymarket CLOB returns bids ascending (worst→best) and asks descending (worst→best).
+    // Best bid is the highest, best ask is the lowest — don't trust array index 0.
+    const bestBid = bids.length > 0 ? Math.max(...bids.map((b) => parseFloat(b.price))) : 0;
+    const bestAsk = asks.length > 0 ? Math.min(...asks.map((a) => parseFloat(a.price))) : 0;
     const spread = bestAsk > 0 && bestBid > 0 ? bestAsk - bestBid : 1;
     const midPrice = bestBid > 0 && bestAsk > 0 ? (bestBid + bestAsk) / 2 : 0;
 
