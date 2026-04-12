@@ -1,4 +1,4 @@
-# Contributing to Polymarket Trader MCP
+# Contributing to Polymarket Agent MCP
 
 Thanks for your interest in contributing! This guide will help you get started.
 
@@ -6,8 +6,8 @@ Thanks for your interest in contributing! This guide will help you get started.
 
 ```bash
 # Clone the repo
-git clone https://github.com/demwick/polymarket-trader-mcp.git
-cd polymarket-trader-mcp
+git clone https://github.com/demwick/polymarket-agent-mcp.git
+cd polymarket-agent-mcp
 
 # Install dependencies
 npm install
@@ -93,8 +93,8 @@ All submissions require review. We use GitHub pull requests for this.
 
 ## Reporting Issues
 
-- **Bugs**: Use the [Bug Report](https://github.com/demwick/polymarket-trader-mcp/issues/new?template=bug_report.yml) template
-- **Features**: Use the [Feature Request](https://github.com/demwick/polymarket-trader-mcp/issues/new?template=feature_request.yml) template
+- **Bugs**: Use the [Bug Report](https://github.com/demwick/polymarket-agent-mcp/issues/new?template=bug_report.yml) template
+- **Features**: Use the [Feature Request](https://github.com/demwick/polymarket-agent-mcp/issues/new?template=feature_request.yml) template
 - **Security**: See [SECURITY.md](SECURITY.md) — do NOT open a public issue
 
 ## License

@@ -9,7 +9,7 @@ Trade, analyze, and automate Polymarket prediction markets via AI
 Full-featured MCP server for Polymarket — search markets, execute trades, copy top traders, analyze smart money flow, backtest strategies, and manage your portfolio. All through natural language via Claude Code, Cursor, or any MCP-compatible AI assistant. Includes 48 tools spanning direct trading, market discovery, trader analysis, copy trading automation, and portfolio management with stop-loss/take-profit.
 
 ## Setup Requirements
-- `MCP_LICENSE_KEY` (optional): License key for Pro features. Get it at https://mcp-marketplace.io/server/polymarket-trader-mcp
+- `MCP_LICENSE_KEY` (optional): License key for Pro features. Get it at https://mcp-marketplace.io/server/polymarket-agent-mcp
 - `COPY_MODE` (optional): Set to `preview` (default, simulated) or `live` (real orders)
 - `DAILY_BUDGET` (optional): Max daily spend in USDC (default: $20)
 - `POLY_PRIVATE_KEY` (optional): Polygon wallet private key — required for live trading
@@ -65,4 +65,4 @@ Finance
 polymarket, trading, prediction-markets, mcp, finance, copy-trading, smart-money, backtest, ai-agent, defi, crypto, portfolio, market-analysis, automation
 
 ## Documentation URL
-https://github.com/demwick/polymarket-trader-mcp
+https://github.com/demwick/polymarket-agent-mcp

@@ -1,13 +1,13 @@
 {
   "$schema": "https://safeskill.dev/schema/manifest/v1.json",
-  "name": "polymarket-trader-mcp",
-  "displayName": "Polymarket Trader MCP",
+  "name": "polymarket-agent-mcp",
+  "displayName": "Polymarket Agent MCP",
   "version": "1.6.2",
   "description": "MCP server for Polymarket prediction markets — trading, market discovery, copy trading, smart money flow detection, backtesting, and portfolio management.",
   "author": "demwick",
   "license": "MIT",
-  "repository": "https://github.com/demwick/polymarket-trader-mcp",
-  "homepage": "https://github.com/demwick/polymarket-trader-mcp#readme",
+  "repository": "https://github.com/demwick/polymarket-agent-mcp",
+  "homepage": "https://github.com/demwick/polymarket-agent-mcp#readme",
   "documentation": {
     "readme": "README.md",
     "permissions": "PERMISSIONS.md",
@@ -90,7 +90,7 @@
   },
   "contact": {
     "securityDisclosure": "talhademirell@outlook.com",
-    "issues": "https://github.com/demwick/polymarket-trader-mcp/issues"
+    "issues": "https://github.com/demwick/polymarket-agent-mcp/issues"
   },
   "declaredVerifiableClaims": [
     "All outbound hosts are declared in the outboundHosts list",

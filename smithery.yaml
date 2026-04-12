@@ -32,7 +32,7 @@ startCommand:
   commandFunction: |
     (config) => ({
       command: "npx",
-      args: ["polymarket-trader-mcp"],
+      args: ["polymarket-agent-mcp"],
       env: {
         ...(config.COPY_MODE && { COPY_MODE: config.COPY_MODE }),
         ...(config.DAILY_BUDGET && { DAILY_BUDGET: config.DAILY_BUDGET }),

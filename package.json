@@ -1,11 +1,11 @@
 {
-  "name": "polymarket-trader-mcp",
+  "name": "polymarket-agent-mcp",
   "version": "1.6.2",
   "description": "MCP server for Polymarket — trade, analyze markets, copy top traders, and manage your portfolio via AI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "polymarket-trader-mcp": "dist/index.js"
+    "polymarket-agent-mcp": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -36,11 +36,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/demwick/polymarket-trader-mcp.git"
+    "url": "https://github.com/demwick/polymarket-agent-mcp.git"
   },
-  "homepage": "https://github.com/demwick/polymarket-trader-mcp#readme",
+  "homepage": "https://github.com/demwick/polymarket-agent-mcp#readme",
   "bugs": {
-    "url": "https://github.com/demwick/polymarket-trader-mcp/issues"
+    "url": "https://github.com/demwick/polymarket-agent-mcp/issues"
   },
   "author": "demwick",
   "engines": {

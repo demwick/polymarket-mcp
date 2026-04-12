@@ -1,6 +1,6 @@
 # Permissions & Capabilities
 
-This document is the authoritative disclosure of everything `polymarket-trader-mcp` reads, writes, or sends over the network. There is no hidden behavior — if it is not listed here, it does not happen. The machine-readable equivalent of this manifest lives in [`.well-known/mcp/server-card.json`](./.well-known/mcp/server-card.json) under the `permissions` and `security` keys.
+This document is the authoritative disclosure of everything `polymarket-agent-mcp` reads, writes, or sends over the network. There is no hidden behavior — if it is not listed here, it does not happen. The machine-readable equivalent of this manifest lives in [`.well-known/mcp/server-card.json`](./.well-known/mcp/server-card.json) under the `permissions` and `security` keys.
 
 ## Sensitivity Legend
 
@@ -28,7 +28,7 @@ The WebSocket connection to `ws-subscriptions-clob.polymarket.com` is **inbound-
 
 ## Network Access — Inbound (Optional HTTP Transport)
 
-`polymarket-trader-mcp` ships as a stdio MCP server by default. When run in StreamableHTTP mode it additionally binds to a local port:
+`polymarket-agent-mcp` ships as a stdio MCP server by default. When run in StreamableHTTP mode it additionally binds to a local port:
 
 | Setting | Default | Purpose |
 |---------|---------|---------|

@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "polymarket-trader-mcp": {
+    "polymarket-agent-mcp": {
       "command": "node",
       "args": ["dist/index.js"]
     }

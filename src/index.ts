@@ -94,7 +94,7 @@ const walletMonitor = new WalletMonitor(db, budgetManager, tradeExecutor, config
 const priceStream = new PriceStream();
 
 const server = new McpServer({
-  name: "polymarket-trader-mcp",
+  name: "polymarket-agent-mcp",
   version: pkg.version,
 });
 setMcpServer(server);
@@ -551,7 +551,7 @@ server.resource(
 const useHttp = process.argv.includes("--http") || config.PORT !== undefined;
 
 async function main() {
-  log("info", "Starting Polymarket Trader MCP Server");
+  log("info", "Starting Polymarket Agent MCP Server");
   log("info", `Mode: ${config.COPY_MODE} | Budget: $${config.DAILY_BUDGET}/day`);
 
   if (config.COPY_MODE === "live" && !hasLiveCredentials()) {
@@ -657,7 +657,7 @@ async function startHttpServer() {
     if (url.pathname === "/") {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({
-        name: "polymarket-trader-mcp",
+        name: "polymarket-agent-mcp",
         version: pkg.version,
         mcp: "/mcp",
         health: "/health",

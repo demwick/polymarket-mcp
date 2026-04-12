@@ -12,7 +12,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: Which version of polymarket-trader-mcp are you using?
+      description: Which version of polymarket-agent-mcp are you using?
       placeholder: "e.g. 1.5.1"
     validations:
       required: true

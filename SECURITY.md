@@ -30,7 +30,7 @@ This project is an MCP server for Polymarket trading. Security-relevant areas in
 
 ## Data Handling & Secrets
 
-`polymarket-trader-mcp` is designed to run as a single-tenant local process. The following guarantees are enforced by the codebase and are the standard this project holds itself to:
+`polymarket-agent-mcp` is designed to run as a single-tenant local process. The following guarantees are enforced by the codebase and are the standard this project holds itself to:
 
 ### Secrets
 

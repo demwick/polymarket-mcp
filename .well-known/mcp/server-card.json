@@ -1,11 +1,11 @@
 {
   "serverInfo": {
-    "name": "Polymarket Trader MCP",
+    "name": "Polymarket Agent MCP",
     "version": "1.6.2"
   },
   "description": "Trade, analyze, and automate Polymarket prediction markets via AI. 48 tools for direct trading, smart money flow detection, copy trading, backtesting, and portfolio management.",
-  "homepage": "https://github.com/demwick/polymarket-trader-mcp",
-  "icon": "https://raw.githubusercontent.com/demwick/polymarket-trader-mcp/main/assets/icon.svg",
+  "homepage": "https://github.com/demwick/polymarket-agent-mcp",
+  "icon": "https://raw.githubusercontent.com/demwick/polymarket-agent-mcp/main/assets/icon.svg",
   "configSchema": {
     "type": "object",
     "properties": {

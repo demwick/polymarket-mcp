@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Have an idea to make polymarket-trader-mcp better? We'd love to hear it!
+        Have an idea to make polymarket-agent-mcp better? We'd love to hear it!
 
   - type: dropdown
     id: category

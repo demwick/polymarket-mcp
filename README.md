@@ -1,7 +1,7 @@
-# Polymarket Trader MCP Server
+# Polymarket Agent MCP Server
 
-<a href="https://glama.ai/mcp/servers/demwick/polymarket-trader-mcp">
-  <img src="https://glama.ai/mcp/servers/demwick/polymarket-trader-mcp/badges/card.svg" alt="polymarket-trader-mcp MCP server" />
+<a href="https://glama.ai/mcp/servers/demwick/polymarket-agent-mcp">
+  <img src="https://glama.ai/mcp/servers/demwick/polymarket-agent-mcp/badges/card.svg" alt="polymarket-agent-mcp MCP server" />
 </a>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,10 +10,10 @@
 [![MCP Protocol](https://img.shields.io/badge/MCP-1.0-purple)](https://modelcontextprotocol.io)
 [![Tools](https://img.shields.io/badge/tools-48-orange)]()
 [![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
-[![SafeSkill 97/100](https://img.shields.io/badge/SafeSkill-97%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-trader-mcp)
-[![Socket Badge](https://socket.dev/api/badge/npm/package/polymarket-trader-mcp)](https://socket.dev/npm/package/polymarket-trader-mcp)
-[![Snyk](https://snyk.io/test/github/demwick/polymarket-trader-mcp/badge.svg)](https://snyk.io/test/github/demwick/polymarket-trader-mcp)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/demwick/polymarket-trader-mcp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/demwick/polymarket-trader-mcp)
+[![SafeSkill 97/100](https://img.shields.io/badge/SafeSkill-97%2F100_Verified%20Safe-brightgreen)](https://safeskill.dev/scan/demwick-polymarket-agent-mcp)
+[![Socket Badge](https://socket.dev/api/badge/npm/package/polymarket-agent-mcp)](https://socket.dev/npm/package/polymarket-agent-mcp)
+[![Snyk](https://snyk.io/test/github/demwick/polymarket-agent-mcp/badge.svg)](https://snyk.io/test/github/demwick/polymarket-agent-mcp)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/demwick/polymarket-agent-mcp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/demwick/polymarket-agent-mcp)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12433/badge)](https://www.bestpractices.dev/projects/12433)
 [![MCP Marketplace](https://mcp-marketplace.io/api/badge?slug=polymarket-mcp-server)](https://mcp-marketplace.io/server/polymarket-mcp-server)
 
@@ -41,7 +41,7 @@ The most comprehensive MCP server for Polymarket — 48 tools spanning direct tr
 ### npm Install
 
 ```bash
-npm install -g polymarket-trader-mcp
+npm install -g polymarket-agent-mcp
 ```
 
 ### Docker
@@ -59,7 +59,7 @@ Add to `~/.claude/settings.json`:
   "mcpServers": {
     "polymarket": {
       "command": "npx",
-      "args": ["polymarket-trader-mcp"]
+      "args": ["polymarket-agent-mcp"]
     }
   }
 }
@@ -215,12 +215,12 @@ The server supports two transport modes:
 
 | Mode | Activation | Use case |
 |------|-----------|----------|
-| **stdio** (default) | `npx polymarket-trader-mcp` | Claude Code, Cursor, local MCP clients |
+| **stdio** (default) | `npx polymarket-agent-mcp` | Claude Code, Cursor, local MCP clients |
 | **HTTP** | `--http` flag or `PORT` env var | Self-hosted Docker, private VPS, single-user remote |
 
 ### Deployment model — read this first
 
-This server is designed for **single-tenant use**. Each client runs its own instance with its own SQLite database (`copytrader.db`), watchlist, daily budget, trade history, and monitor loop. The stdio mode is the recommended path for most users — `npx polymarket-trader-mcp` or the Claude Code config above gives you a fully isolated, local-only instance.
+This server is designed for **single-tenant use**. Each client runs its own instance with its own SQLite database (`copytrader.db`), watchlist, daily budget, trade history, and monitor loop. The stdio mode is the recommended path for most users — `npx polymarket-agent-mcp` or the Claude Code config above gives you a fully isolated, local-only instance.
 
 > ⚠️ **Do not expose an HTTP instance publicly.** The server has no per-user isolation: watchlist, positions, budget, and the background monitor loop are shared across every client that connects. A public HTTP deployment is effectively a shared workspace, not a multi-tenant SaaS. If you enable live trading, a public endpoint can drain your Polymarket wallet from any caller. Always configure the HTTP bearer-token env var (see [PERMISSIONS.md](PERMISSIONS.md)) and keep the endpoint behind a firewall, VPN, or auth proxy.
 
@@ -311,8 +311,8 @@ This package has a transparent, minimal footprint. Full disclosure: **[PERMISSIO
 ## Development
 
 ```bash
-git clone https://github.com/demwick/polymarket-trader-mcp.git
-cd polymarket-trader-mcp
+git clone https://github.com/demwick/polymarket-agent-mcp.git
+cd polymarket-agent-mcp
 npm install
 npm run build
 npm test         # 200+ tests
