@@ -1,26 +1,9 @@
 import Database from "better-sqlite3";
 import { ClobClient, Side, OrderType } from "@polymarket/clob-client";
 import { Wallet } from "@ethersproject/wallet";
-import { recordTrade, recordTradeWithBudget } from "../db/queries.js";
+import { recordTrade, recordTradeWithBudget, resolveDailyLimit } from "../db/queries.js";
 import { getConfig, getSigningKey, hasLiveCredentials } from "../utils/config.js";
 import { log } from "../utils/logger.js";
-
-/**
- * Resolve today's effective daily budget limit, preferring a dashboard-written
- * `daily_budget.limit_amount` override and falling back to the env default.
- * Mirrors BudgetManager.getDailyLimit so preview trades record spending against
- * the same source of truth even when called through direct tools (buy/sell).
- */
-function resolveDailyLimit(db: Database.Database): number {
-  const today = new Date().toISOString().split("T")[0];
-  const row = db
-    .prepare("SELECT limit_amount FROM daily_budget WHERE date = ?")
-    .get(today) as { limit_amount: number } | undefined;
-  if (row && typeof row.limit_amount === "number" && row.limit_amount > 0) {
-    return row.limit_amount;
-  }
-  return getConfig().DAILY_BUDGET;
-}
 
 /** Redact private keys and hex secrets from error messages to prevent leaks in logs. */
 function sanitizeError(msg: string): string {
@@ -87,7 +70,7 @@ export class TradeExecutor {
     const budget = order.budget ?? {
       date: new Date().toISOString().split("T")[0],
       spendAmount: order.amount,
-      dailyLimit: resolveDailyLimit(this.db),
+      dailyLimit: resolveDailyLimit(this.db, getConfig().DAILY_BUDGET),
     };
 
     const tradeId = recordTradeWithBudget(
