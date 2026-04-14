@@ -1,6 +1,6 @@
 {
   "name": "polymarket-agent-mcp",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "mcpName": "io.github.demwick/polymarket-agent-mcp",
   "description": "MCP server for Polymarket — trade, analyze markets, copy top traders, and manage your portfolio via AI",
   "main": "dist/index.js",
@@ -56,6 +56,11 @@
     "safeskill.manifest.json",
     ".env.example"
   ],
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
+  },
   "dependencies": {
     "@ethersproject/wallet": "^5.8.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
