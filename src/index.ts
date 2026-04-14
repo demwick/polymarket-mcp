@@ -168,7 +168,7 @@ server.tool(
 
 server.tool(
   "watchlist.list",
-  "Show all wallet addresses currently on the copy trading watchlist with their aliases and status. Returns a table of watched wallets. No parameters needed.",
+  "Show every wallet address currently on the copy-trading watchlist, with its alias, date added, and active/paused status. Use to review who is being copied before calling monitor.start, after watchlist.rebalance to confirm removals, or to pick a target for traders.analyze, traders.positions, or traders.score. Returns a markdown table of watched wallets. Call watchlist.add to manage entries, or traders.discover to find new wallets to watch. No parameters.",
   {},
   safe("watchlist.list", async () => ({ content: [{ type: "text" as const, text: await handleListWatchlist(db) }] }))
 );
@@ -182,7 +182,7 @@ server.tool(
 
 server.tool(
   "monitor.stop",
-  "Stop the background wallet monitoring loop started by start_monitor. No parameters needed. Safe to call even if monitor is not running.",
+  "Stop the background wallet monitoring loop started by monitor.start. Call this to end a copy-trading session, before changing bot configuration via config.set or config.safety_limits, or when switching between preview and live modes via config.go_live. Does NOT close open positions — use positions.close or positions.set_exit_rules separately to unwind trades. Idempotent: safe to call when the monitor is not running. Returns a short confirmation string. No parameters. Pro feature.",
   {},
   safe("monitor.stop", async () => ({ content: [{ type: "text" as const, text: await handleStopMonitor(walletMonitor) }] }))
 );
@@ -273,7 +273,7 @@ server.tool(
 
 server.tool(
   "orders.cancel",
-  "Cancel all open/pending limit orders on Polymarket. Only works in live mode. Returns the number of cancelled orders. No parameters needed. Pro feature.",
+  "Cancel ALL open/pending limit orders on Polymarket for this account in a single call. Use as an emergency stop, before changing strategy, after a sudden price move, or when unwinding positions. Not reversible — cancelled orders must be re-placed via orders.buy, wta.bid, or orders.batch. Returns the count of cancelled orders. Call orders.list first if you want to preview what will be cancelled. Only works in live mode (no-op in preview). No parameters. Pro feature.",
   cancelOrdersSchema.shape,
   safe("orders.cancel", async () => ({ content: [{ type: "text" as const, text: await handleCancelOrders(tradeExecutor) }] }))
 );
@@ -301,7 +301,7 @@ server.tool(
 
 server.tool(
   "portfolio.get",
-  "Get a comprehensive portfolio overview showing all positions grouped by copied wallet, with per-wallet P&L, individual position details, and active exit rules. No parameters needed.",
+  "Get a comprehensive portfolio overview of all open copy-trading positions, grouped by the source trader they were copied from, with per-wallet subtotals, individual market names/entry prices/sizes, active stop-loss/take-profit rules, and an aggregate total P&L. Use as a daily status check, before sizing decisions via config.set, or to identify which source wallet is carrying the portfolio. Returns a grouped markdown table. Call portfolio.balance for budget-focused numbers or portfolio.risk for concentration metrics. No parameters.",
   {},
   safe("portfolio.get", async () => ({ content: [{ type: "text" as const, text: await handleGetPortfolio(db) }] }))
 );
@@ -441,14 +441,14 @@ server.tool(
 
 server.tool(
   "orders.list",
-  "View all pending limit orders on Polymarket that have not yet been filled. Only returns results in live mode. No parameters needed.",
+  "List all open (pending/unfilled) limit orders currently resting on Polymarket's order book for this account. Use after placing limit orders via orders.buy or wta.bid to confirm acceptance, or before orders.cancel to preview what will be removed. Returns each order's ID, market question, side (BUY/SELL), size, limit price, and age. For deeper detail on a single order, call orders.status with its order_id. Only works in live mode (returns an empty list in preview). No parameters. Pro feature.",
   {},
   safe("orders.list", async () => ({ content: [{ type: "text" as const, text: await handleGetOpenOrders(tradeExecutor) }] }))
 );
 
 server.tool(
   "orders.status",
-  "Check the current status of a specific Polymarket order by order ID. Returns fill status, price, and amount. Only works in live mode.",
+  "Check the live state of a specific Polymarket limit order by its order_id. Use after orders.buy, orders.batch, or wta.bid to track fill progress, or to verify that an orders.cancel call succeeded. Returns the order status (OPEN, FILLED, CANCELLED, or EXPIRED), filled amount, remaining size, current limit price, and the market it was placed on. Obtain the order_id from the response of the placing tool or from orders.list. Only works in live mode.",
   getOrderStatusSchema.shape,
   safe("orders.status", async (input) => ({ content: [{ type: "text" as const, text: await handleGetOrderStatus(tradeExecutor, getOrderStatusSchema.parse(input)) }] }))
 );
