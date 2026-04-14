@@ -49,10 +49,12 @@ jobs:
 
       - name: Bump version on develop
         id: version
+        env:
+          BUMP: ${{ inputs.bump }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          npm version ${{ inputs.bump }} --no-git-tag-version
+          npm version "$BUMP" --no-git-tag-version
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           git add package.json package-lock.json 2>/dev/null || git add package.json
@@ -62,63 +64,59 @@ jobs:
       - name: Create release PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          AHEAD: ${{ steps.check.outputs.commits_ahead }}
+          CHANGES: ${{ steps.check.outputs.changes }}
+          BUMP: ${{ inputs.bump }}
         run: |
-          VERSION=${{ steps.version.outputs.version }}
-          AHEAD=${{ steps.check.outputs.commits_ahead }}
-
           EXISTING=$(gh pr list --base main --head develop --state open --json number -q '.[0].number')
+          BODY=$(cat <<'EOF'
+          ## Release v__VERSION__
+
+          **Version bump:** __BUMP__
+          **Commits:** __AHEAD__ new commits from develop
+
+          ### Changes
+          __CHANGES__
+
+          ---
+          After merging, create the release tag:
+          ```bash
+          git checkout main && git pull
+          git tag v__VERSION__ && git push origin v__VERSION__
+          ```
+          Or run: `gh workflow run release.yml` if tag-on-merge is set up.
+          EOF
+          )
+          BODY=${BODY//__VERSION__/$VERSION}
+          BODY=${BODY//__BUMP__/$BUMP}
+          BODY=${BODY//__AHEAD__/$AHEAD}
+          BODY=${BODY//__CHANGES__/$CHANGES}
+
           if [ -n "$EXISTING" ]; then
             echo "Updating existing PR #$EXISTING"
             gh pr edit "$EXISTING" \
               --title "Release v${VERSION}" \
-              --body "$(cat <<EOF
-          ## Release v${VERSION}
-
-          **Version bump:** ${{ inputs.bump }}
-          **Commits:** ${AHEAD} new commits from develop
-
-          ### Changes
-          ${{ steps.check.outputs.changes }}
-
-          ---
-          After merging, create the release tag:
-          \`\`\`bash
-          git checkout main && git pull
-          git tag v${VERSION} && git push origin v${VERSION}
-          \`\`\`
-          Or run: \`gh workflow run release.yml\` if tag-on-merge is set up.
-          EOF
-          )"
+              --body "$BODY"
             echo "Updated PR #$EXISTING"
           else
             gh pr create \
               --base main \
               --head develop \
               --title "Release v${VERSION}" \
-              --body "$(cat <<EOF
-          ## Release v${VERSION}
-
-          **Version bump:** ${{ inputs.bump }}
-          **Commits:** ${AHEAD} new commits from develop
-
-          ### Changes
-          ${{ steps.check.outputs.changes }}
-
-          ---
-          After merging, create the release tag:
-          \`\`\`bash
-          git checkout main && git pull
-          git tag v${VERSION} && git push origin v${VERSION}
-          \`\`\`
-          EOF
-          )"
+              --body "$BODY"
           fi
 
       - name: Summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          BUMP: ${{ inputs.bump }}
+          AHEAD: ${{ steps.check.outputs.commits_ahead }}
         run: |
-          VERSION=${{ steps.version.outputs.version }}
-          echo "## Release PR created" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Version: **v${VERSION}** (${{ inputs.bump }} bump)" >> $GITHUB_STEP_SUMMARY
-          echo "- Commits from develop: **${{ steps.check.outputs.commits_ahead }}**" >> $GITHUB_STEP_SUMMARY
-          echo "- **Next:** Review and merge the PR, then push the tag" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Release PR created"
+            echo ""
+            echo "- Version: **v${VERSION}** (${BUMP} bump)"
+            echo "- Commits from develop: **${AHEAD}**"
+            echo "- **Next:** Review and merge the PR, then push the tag"
+          } >> $GITHUB_STEP_SUMMARY
