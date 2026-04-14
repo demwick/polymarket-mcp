@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { getDailySpent, addDailySpent, getDailyBudgetRemaining } from "../db/queries.js";
+import { getDailySpent, addDailySpent, getDailyBudgetRemaining, resolveDailyLimit } from "../db/queries.js";
 
 export interface CopyAmountInput {
   originalAmount: number;
@@ -20,30 +20,31 @@ export class BudgetManager {
 
   calculateCopyAmount(input: CopyAmountInput): number {
     const today = new Date().toISOString().split("T")[0];
-    const remaining = getDailyBudgetRemaining(this.db, today, this.dailyLimit);
+    const limit = this.getDailyLimit();
+    const remaining = getDailyBudgetRemaining(this.db, today, limit);
 
     if (remaining <= 0) return 0;
 
-    const base = this.dailyLimit / input.activeTraderCount;
+    const base = limit / input.activeTraderCount;
     const multiplier = getConvictionMultiplier(input.originalAmount);
     const raw = base * multiplier;
-    const cap = this.dailyLimit * 0.25;
+    const cap = limit * 0.25;
     const capped = Math.min(raw, cap);
 
     return Math.min(capped, remaining);
   }
 
   recordSpending(date: string, amount: number): void {
-    addDailySpent(this.db, date, amount, this.dailyLimit);
+    addDailySpent(this.db, date, amount, this.getDailyLimit());
   }
 
   getRemainingBudget(): number {
     const today = new Date().toISOString().split("T")[0];
-    return getDailyBudgetRemaining(this.db, today, this.dailyLimit);
+    return getDailyBudgetRemaining(this.db, today, this.getDailyLimit());
   }
 
   getDailyLimit(): number {
-    return this.dailyLimit;
+    return resolveDailyLimit(this.db, this.dailyLimit);
   }
 
   setDailyLimit(limit: number): void {

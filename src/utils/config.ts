@@ -7,8 +7,15 @@
 // disclosure and PERMISSIONS.md for the runtime capability manifest.
 import dotenv from "dotenv";
 import { z } from "zod";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({ quiet: true });
+// Load .env from the package root regardless of process cwd — Claude Code's MCP
+// spawner does not honor the .mcp.json `cwd` field, so relying on cwd-relative
+// resolution silently falls back to zod defaults (e.g. DAILY_BUDGET=20).
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "..", "..", ".env"), quiet: true });
 
 const configSchema = z.object({
   POLY_PRIVATE_KEY: z.string().optional().default(""),

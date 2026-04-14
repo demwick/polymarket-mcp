@@ -1,0 +1,52 @@
+{
+  "commands": [
+    {
+      "name": "Test: watch",
+      "command": "npm run test:watch"
+    },
+    {
+      "name": "Test: all",
+      "command": "npm test"
+    },
+    {
+      "name": "Test: changed",
+      "command": "npx vitest run --changed"
+    },
+    {
+      "name": "Test: budget-manager",
+      "command": "npx vitest run tests/services/budget-manager.test.ts"
+    },
+    {
+      "name": "Test: trade-executor",
+      "command": "npx vitest run tests/services/trade-executor.test.ts"
+    },
+    {
+      "name": "Test: scenarios",
+      "command": "npx vitest run tests/scenarios/"
+    },
+    {
+      "name": "Type check",
+      "command": "npx tsc --noEmit"
+    },
+    {
+      "name": "Build",
+      "command": "npm run build"
+    },
+    {
+      "name": "Dev (watch compile)",
+      "command": "npm run dev"
+    },
+    {
+      "name": "Start MCP (preview)",
+      "command": "COPY_MODE=preview npm start"
+    },
+    {
+      "name": "Tail trades DB",
+      "command": "sqlite3 copytrader.db 'SELECT id, side, market_slug, amount, price, status FROM trades ORDER BY created_at DESC LIMIT 20'"
+    },
+    {
+      "name": "Tail daily budget",
+      "command": "sqlite3 copytrader.db 'SELECT date, spent, limit_amount FROM daily_budget ORDER BY date DESC LIMIT 10'"
+    }
+  ]
+}

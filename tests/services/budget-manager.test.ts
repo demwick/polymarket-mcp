@@ -60,4 +60,64 @@ describe("BudgetManager", () => {
     bm.recordSpending(today, 12);
     expect(bm.getRemainingBudget()).toBe(8);
   });
+
+  it("uses daily_budget.limit_amount override when present for today", () => {
+    const today = new Date().toISOString().split("T")[0];
+    db.prepare(
+      "INSERT INTO daily_budget (date, spent, limit_amount) VALUES (?, 0, 100)"
+    ).run(today);
+    expect(bm.getDailyLimit()).toBe(100);
+    expect(bm.getRemainingBudget()).toBe(100);
+  });
+
+  it("falls back to env default when daily_budget row is absent", () => {
+    expect(bm.getDailyLimit()).toBe(20);
+  });
+
+  it("falls back to env default when daily_budget.limit_amount is zero", () => {
+    const today = new Date().toISOString().split("T")[0];
+    db.prepare(
+      "INSERT INTO daily_budget (date, spent, limit_amount) VALUES (?, 0, 0)"
+    ).run(today);
+    expect(bm.getDailyLimit()).toBe(20);
+  });
+
+  it("falls back to env default when daily_budget.limit_amount is negative", () => {
+    const today = new Date().toISOString().split("T")[0];
+    db.prepare(
+      "INSERT INTO daily_budget (date, spent, limit_amount) VALUES (?, 0, -50)"
+    ).run(today);
+    expect(bm.getDailyLimit()).toBe(20);
+  });
+
+  it("calculateCopyAmount uses override limit for the 25% cap", () => {
+    // With env limit 20, cap = 5. With override 100, cap = 25.
+    // Inputs (high conviction, single trader) produce raw=150 — without the
+    // override this would be capped to 5; with the override it hits 25.
+    const today = new Date().toISOString().split("T")[0];
+    db.prepare(
+      "INSERT INTO daily_budget (date, spent, limit_amount) VALUES (?, 0, 100)"
+    ).run(today);
+
+    const amount = bm.calculateCopyAmount({
+      originalAmount: 100,
+      activeTraderCount: 1,
+    });
+    expect(amount).toBe(25);
+  });
+
+  it("calculateCopyAmount uses override limit for the base allocation", () => {
+    // With env limit 20 / 10 traders = base 2. With override 100 / 10 = 10.
+    // Normal conviction (mult=1), so raw = base; cap (25) never binds.
+    const today = new Date().toISOString().split("T")[0];
+    db.prepare(
+      "INSERT INTO daily_budget (date, spent, limit_amount) VALUES (?, 0, 100)"
+    ).run(today);
+
+    const amount = bm.calculateCopyAmount({
+      originalAmount: 30,
+      activeTraderCount: 10,
+    });
+    expect(amount).toBe(10);
+  });
 });

@@ -577,7 +577,7 @@ async function startHttpServer() {
   const httpServer = createServer(async (req, res) => {
     const url = new URL(req.url || "/", `http://${req.headers.host}`);
 
-    // Server card for Smithery discovery (served from pre-loaded static JSON).
+    // MCP discovery card (served from pre-loaded static JSON).
     if (url.pathname === "/.well-known/mcp/server-card.json") {
       res.writeHead(200, { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" });
       res.end(SERVER_CARD_TEXT);
@@ -613,8 +613,8 @@ async function startHttpServer() {
       // Normalize Accept header for clients that omit either required MIME
       // type. StreamableHTTPServerTransport does a literal substring check
       // for both "application/json" and "text/event-stream"; some proxies
-      // (e.g. Smithery Connect) send only one of these, or "*/*", and the
-      // transport rejects with 406/500. @hono/node-server reads rawHeaders,
+      // send only one of these, or "*/*", and the transport rejects with
+      // 406/500. @hono/node-server reads rawHeaders,
       // so both req.headers and req.rawHeaders must be updated.
       const accept = req.headers.accept || "";
       if (!accept.includes("application/json") || !accept.includes("text/event-stream")) {

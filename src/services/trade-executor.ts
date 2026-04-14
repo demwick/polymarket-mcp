@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { ClobClient, Side, OrderType } from "@polymarket/clob-client";
 import { Wallet } from "@ethersproject/wallet";
-import { recordTrade, recordTradeWithBudget } from "../db/queries.js";
+import { recordTrade, recordTradeWithBudget, resolveDailyLimit } from "../db/queries.js";
 import { getConfig, getSigningKey, hasLiveCredentials } from "../utils/config.js";
 import { log } from "../utils/logger.js";
 
@@ -64,10 +64,22 @@ export class TradeExecutor {
       status: "simulated" as const,
     };
 
-    // Use atomic transaction if budget info provided
-    const tradeId = order.budget
-      ? recordTradeWithBudget(this.db, tradeData, order.budget.date, order.budget.spendAmount, order.budget.dailyLimit)
-      : recordTrade(this.db, tradeData);
+    // BUY spends — amount in USDC is what leaves the budget. Auto-populate
+    // budget info when the caller (e.g. direct `buy` tool) didn't supply it so
+    // that `daily_budget.spent` stays accurate across every preview BUY path.
+    const budget = order.budget ?? {
+      date: new Date().toISOString().split("T")[0],
+      spendAmount: order.amount,
+      dailyLimit: resolveDailyLimit(this.db, getConfig().DAILY_BUDGET),
+    };
+
+    const tradeId = recordTradeWithBudget(
+      this.db,
+      tradeData,
+      budget.date,
+      budget.spendAmount,
+      budget.dailyLimit
+    );
 
     log("trade", `[PREVIEW] Simulated BUY $${order.amount} @ ${order.price} on ${order.marketSlug}`, {
       trader: order.traderAddress,

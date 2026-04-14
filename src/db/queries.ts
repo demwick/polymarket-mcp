@@ -124,6 +124,24 @@ export function getDailyBudgetRemaining(db: Database.Database, date: string, dai
   return Math.max(0, dailyLimit - spent);
 }
 
+/**
+ * Resolve today's effective daily budget limit. The dashboard can override the
+ * caller's default by writing a positive `daily_budget.limit_amount` row for
+ * today; otherwise the supplied fallback (env default or constructor value)
+ * wins. Single source of truth for both BudgetManager and TradeExecutor so
+ * every preview spend path records against the same limit.
+ */
+export function resolveDailyLimit(db: Database.Database, fallback: number): number {
+  const today = new Date().toISOString().split("T")[0];
+  const row = db
+    .prepare("SELECT limit_amount FROM daily_budget WHERE date = ?")
+    .get(today) as { limit_amount: number } | undefined;
+  if (row && typeof row.limit_amount === "number" && row.limit_amount > 0) {
+    return row.limit_amount;
+  }
+  return fallback;
+}
+
 export function getTradeStats(db: Database.Database): { total: number; wins: number; losses: number; totalPnl: number; winRate: number } {
   const rows = db.prepare("SELECT status, pnl FROM trades").all() as { status: string; pnl: number }[];
   const total = rows.length;

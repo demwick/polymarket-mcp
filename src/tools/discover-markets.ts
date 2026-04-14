@@ -55,7 +55,8 @@ export async function handleDiscoverMarkets(input: DiscoverMarketsInput): Promis
     }
 
     let output = `## Markets (${markets.length}) — ending: ${input.ending}\n\n`;
-    output += `| # | Market | End Date | Volume | Price |\n|---|--------|----------|--------|-------|\n`;
+    output += `| # | Market | Condition ID | End Date | Volume | Price |\n`;
+    output += `|---|--------|--------------|----------|--------|-------|\n`;
 
     for (let i = 0; i < markets.length; i++) {
       const m = markets[i] as any;
@@ -63,8 +64,10 @@ export async function handleDiscoverMarkets(input: DiscoverMarketsInput): Promis
       const end = (m.endDate ?? "").slice(0, 16).replace("T", " ");
       const vol = parseFloat(m.volume ?? "0");
       const prices = m.outcomePrices ?? "";
-      const slug = m.slug ?? "";
-      output += `| ${i + 1} | ${q} | ${end} | $${vol.toFixed(0)} | ${prices} |\n`;
+      // Exposing conditionId here lets the agent skip a second lookup via
+      // search_markets/resolveMarketByConditionId before pre-trade gating.
+      const cid = (m.conditionId ?? "").slice(0, 12) + "…";
+      output += `| ${i + 1} | ${q} | \`${cid}\` (${m.conditionId ?? ""}) | ${end} | $${vol.toFixed(0)} | ${prices} |\n`;
     }
 
     return output;
